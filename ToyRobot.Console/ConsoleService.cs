@@ -33,6 +33,8 @@ internal class ConsoleService : IHostedService
         {
             Console.WriteLine("ToyRobot");
             Console.WriteLine("Valid commands:");
+            Console.WriteLine("RESIZE w,h");
+            Console.WriteLine("SIZE");
             Console.WriteLine("PLACE x,y,direction (NORTH,EAST,SOUTH,WEST)");
             Console.WriteLine("MOVE");
             Console.WriteLine("LEFT");

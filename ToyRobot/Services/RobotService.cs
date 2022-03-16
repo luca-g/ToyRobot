@@ -62,6 +62,28 @@ public class RobotService
                     this._mapPosition = mapPositon;
                     this._logger.LogTrace("PLACE command: robot at position {0},{1}", x, y);
                     break;
+                case "RESIZE":
+                    if (commandParts.Count() != 3)
+                    {
+                        this._logger.LogTrace("RESIZE command count error");
+                        return false;
+                    }
+                    int w;
+                    int h;
+                    if (!int.TryParse(commandParts[1], out w))
+                    {
+                        this._logger.LogTrace("RESIZE invalid W value: {0}", commandParts[1]);
+                        return false;
+                    }
+                    if (!int.TryParse(commandParts[2], out h))
+                    {
+                        this._logger.LogTrace("RESIZE invalid H value: {0}", commandParts[2]);
+                        return false;
+                    }
+                    this._map.SetMapSize(w, h);
+                    this._mapPosition = null;
+                    this._logger.LogTrace("RESIZE command: map resized to {0},{1}", w, h);
+                    break;
                 case "MOVE":
                     if (this._mapPosition == null)
                     {
@@ -86,6 +108,10 @@ public class RobotService
                     }
                     result = this._mapPosition.ToString();
                     this._logger.LogTrace("REPORT command result: {result}", result);
+                    break;
+                case "SIZE":
+                    result = string.Format("Map size {0},{1}", _map.Width, _map.Height);
+                    this._logger.LogTrace("SIZE command result: {result}", result);
                     break;
                 case "LEFT":
                     if (this._mapPosition == null)

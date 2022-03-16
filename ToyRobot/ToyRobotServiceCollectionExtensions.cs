@@ -10,8 +10,8 @@ public static class ToyRobotServiceCollectionExtensions
          this IServiceCollection services, IConfiguration config)
     {
         services.Configure<MapSettings>(config.GetSection(MapSettings.SectionName));
-        services.AddTransient<MapService>();
-        services.AddTransient<RobotService>();
+        services.AddScoped<MapService>();
+        services.AddScoped<RobotService>();
         return services;
     }
 }
