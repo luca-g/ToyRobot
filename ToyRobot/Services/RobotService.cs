@@ -8,21 +8,32 @@ public class RobotService
     private MapPosition? _mapPosition;
     private MapService _map;
     private readonly ILogger<RobotService> _logger;
-    public RobotService(ILogger<RobotService> logger, MapService map)
+    private readonly IRobotStepHistoryService _robotStepHistoryService;
+    public RobotService(ILogger<RobotService> logger, MapService map, IRobotStepHistoryService robotStepHistoryService)
     {
         this._map = map;
         this._mapPosition = null;
         this._logger = logger;
+        this._robotStepHistoryService = robotStepHistoryService;
+    }
+    public MapPosition? RobotPosition { get { return _mapPosition; } }
+    public bool Execute(MapPosition mapPosition, string command, out string? result)
+    {
+        this._mapPosition = mapPosition;
+        return this.Execute(command, out result);
     }
     public bool Execute(string command, out string? result)
     {
+        result = null;
+        var isValidCommand = true;
+        var previousMapPosition = this._mapPosition;
         try
         {
             this._logger.LogTrace("Execute command: {command}", command);
-            result = null;
             if (string.IsNullOrEmpty(command))
             {
                 this._logger.LogTrace("Command is null or empty");
+                isValidCommand = false;
                 return false;
             }
             var commandParts = command.Split(new char[] { ' ', ',' });
@@ -32,6 +43,7 @@ public class RobotService
                     if (commandParts.Count() != 4)
                     {
                         this._logger.LogTrace("PLACE command count error");
+                        isValidCommand = false;
                         return false;
                     }
                     int x;
@@ -40,24 +52,27 @@ public class RobotService
                     if (!int.TryParse(commandParts[1], out x))
                     {
                         this._logger.LogTrace("PLACE invalid X value: {0}", commandParts[1]);
+                        isValidCommand = false;
                         return false;
                     }
                     if (!int.TryParse(commandParts[2], out y))
                     {
                         this._logger.LogTrace("PLACE invalid Y value: {0}", commandParts[2]);
+                        isValidCommand = false;
                         return false;
                     }
                     if (!Enum.TryParse(commandParts[3], out mapOrientation))
                     {
                         this._logger.LogTrace("PLACE invalid orientation value: {0}", commandParts[3]);
+                        isValidCommand = false;
                         return false;
                     }
                     var mapPositon = new MapPosition(x, y, mapOrientation);
                     if (!this._map.IsInMap(mapPositon))
                     {
                         this._logger.LogTrace("PLACE position set outside the map");
-                        this._mapPosition = null;
-                        return true;
+                        isValidCommand = false;
+                        return false;
                     }
                     this._mapPosition = mapPositon;
                     this._logger.LogTrace("PLACE command: robot at position {0},{1}", x, y);
@@ -66,6 +81,7 @@ public class RobotService
                     if (commandParts.Count() != 3)
                     {
                         this._logger.LogTrace("RESIZE command count error");
+                        isValidCommand = false;
                         return false;
                     }
                     int w;
@@ -73,15 +89,18 @@ public class RobotService
                     if (!int.TryParse(commandParts[1], out w))
                     {
                         this._logger.LogTrace("RESIZE invalid W value: {0}", commandParts[1]);
+                        isValidCommand = false;
                         return false;
                     }
                     if (!int.TryParse(commandParts[2], out h))
                     {
                         this._logger.LogTrace("RESIZE invalid H value: {0}", commandParts[2]);
+                        isValidCommand = false;
                         return false;
                     }
                     this._map.SetMapSize(w, h);
                     this._mapPosition = null;
+                    this._robotStepHistoryService.AddResizeMapStep(w, h);
                     this._logger.LogTrace("RESIZE command: map resized to {0},{1}", w, h);
                     break;
                 case "MOVE":
@@ -133,6 +152,7 @@ public class RobotService
                     break;
                 default:
                     this._logger.LogTrace("Invalid command: {0}", commandParts[0]);
+                    isValidCommand = false;
                     return false;
             }
             return true;
@@ -141,6 +161,10 @@ public class RobotService
         {
             _logger.LogError(ex, "Execute error");
             throw;
+        }
+        finally
+        {
+            this._robotStepHistoryService.AddStep(previousMapPosition, this._mapPosition, command, isValidCommand, result);
         }
     }
 }

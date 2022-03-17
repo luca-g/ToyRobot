@@ -9,6 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobot.Console", "ToyRobo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobotTests", "ToyRobotTests\ToyRobotTests.csproj", "{B6059F1E-9BB7-4967-B556-6A431613ABB0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobot.API", "ToyRobot.API\ToyRobot.API.csproj", "{E8FB80DC-7ADB-4105-AB60-8AF795AEB796}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyRobot.SqlServerModel", "ToyRobot.SqlServerModel\ToyRobot.SqlServerModel.csproj", "{FA83BE36-D149-4875-A734-ABED39ED1ED0}"
+EndProject
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "ToyRobot.SqlServerDB", "ToyRobot.SqlServerDB\ToyRobot.SqlServerDB.sqlproj", "{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +33,20 @@ Global
 		{B6059F1E-9BB7-4967-B556-6A431613ABB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6059F1E-9BB7-4967-B556-6A431613ABB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6059F1E-9BB7-4967-B556-6A431613ABB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8FB80DC-7ADB-4105-AB60-8AF795AEB796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8FB80DC-7ADB-4105-AB60-8AF795AEB796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8FB80DC-7ADB-4105-AB60-8AF795AEB796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8FB80DC-7ADB-4105-AB60-8AF795AEB796}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA83BE36-D149-4875-A734-ABED39ED1ED0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA83BE36-D149-4875-A734-ABED39ED1ED0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA83BE36-D149-4875-A734-ABED39ED1ED0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA83BE36-D149-4875-A734-ABED39ED1ED0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3442896-19DB-4DC6-BA7E-DF80242CD0FA}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

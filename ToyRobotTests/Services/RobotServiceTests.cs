@@ -22,7 +22,9 @@ public class RobotServiceTests
 
         var mockRobotLogger = new Mock<ILogger<RobotService>>();
 
-        _robotService = new RobotService(mockRobotLogger.Object, mapService);
+        var mockRobotStepHistoryService = new Mock<IRobotStepHistoryService>();
+
+        _robotService = new RobotService(mockRobotLogger.Object, mapService, mockRobotStepHistoryService.Object);
     }
 
     [TestMethod()]
