@@ -15,11 +15,10 @@ internal class ConsoleService : IHostedService
         this._robot = robot;
         this._logger = logger;
     }
-    public Task StartAsync(CancellationToken cancellationToken)
+    public async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("ConsoleService StartAsync");
-        this.ReadCommands(cancellationToken);
-        return Task.CompletedTask;
+        await this.ReadCommands(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken)
@@ -27,7 +26,7 @@ internal class ConsoleService : IHostedService
         _logger.LogInformation("ConsoleService StopAsync");
         return Task.CompletedTask;
     }
-    public void ReadCommands(CancellationToken cancellationToken)
+    public async Task ReadCommands(CancellationToken cancellationToken)
     {
         try
         {
@@ -50,14 +49,13 @@ internal class ConsoleService : IHostedService
                     string? command = Console.ReadLine();
                     if (command != null)
                     {
-                        string? result;
-                        if (!_robot.Execute(command, out result))
+                        if (! await _robot.Execute(command))
                         {
                             Console.WriteLine("Invalid command");
                         }
-                        else if (result != null)
+                        else if (_robot.ExecuteResult != null)
                         {
-                            Console.WriteLine(result);
+                            Console.WriteLine(_robot.ExecuteResult);
                         }
                     }
                 }

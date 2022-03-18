@@ -17,14 +17,15 @@ public class RobotService
         this._robotStepHistoryService = robotStepHistoryService;
     }
     public MapPosition? RobotPosition { get { return _mapPosition; } }
-    public bool Execute(MapPosition mapPosition, string command, out string? result)
+    public string? ExecuteResult { get; private set; }
+    public async Task<bool> Execute(MapPosition mapPosition, string command)
     {
         this._mapPosition = mapPosition;
-        return this.Execute(command, out result);
+        return await this.Execute(command);
     }
-    public bool Execute(string command, out string? result)
+    public async Task<bool> Execute(string command)
     {
-        result = null;
+        this.ExecuteResult = null;
         var isValidCommand = true;
         var previousMapPosition = this._mapPosition;
         try
@@ -100,7 +101,7 @@ public class RobotService
                     }
                     this._map.SetMapSize(w, h);
                     this._mapPosition = null;
-                    this._robotStepHistoryService.AddResizeMapStep(w, h);
+                    await this._robotStepHistoryService.AddResizeMapStepAsync(w, h);
                     this._logger.LogTrace("RESIZE command: map resized to {0},{1}", w, h);
                     break;
                 case "MOVE":
@@ -121,16 +122,16 @@ public class RobotService
                 case "REPORT":
                     if (this._mapPosition == null)
                     {
-                        result = "Robot out of map";
-                        this._logger.LogTrace("REPORT command result: {result}", result);
+                        this.ExecuteResult = "Robot out of map";
+                        this._logger.LogTrace("REPORT command result: {result}", this.ExecuteResult);
                         return true;
                     }
-                    result = this._mapPosition.ToString();
-                    this._logger.LogTrace("REPORT command result: {result}", result);
+                    this.ExecuteResult = this._mapPosition.ToString();
+                    this._logger.LogTrace("REPORT command result: {result}", this.ExecuteResult);
                     break;
                 case "SIZE":
-                    result = string.Format("Map size {0},{1}", _map.Width, _map.Height);
-                    this._logger.LogTrace("SIZE command result: {result}", result);
+                    this.ExecuteResult = string.Format("Map size {0},{1}", _map.Width, _map.Height);
+                    this._logger.LogTrace("SIZE command result: {result}", this.ExecuteResult);
                     break;
                 case "LEFT":
                     if (this._mapPosition == null)
@@ -164,7 +165,7 @@ public class RobotService
         }
         finally
         {
-            this._robotStepHistoryService.AddStep(previousMapPosition, this._mapPosition, command, isValidCommand, result);
+            await this._robotStepHistoryService.AddStep(previousMapPosition, this._mapPosition, command, isValidCommand, this.ExecuteResult);
         }
     }
 }

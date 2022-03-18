@@ -9,8 +9,8 @@ namespace ToyRobot.Services
 {
     public interface IRobotStepHistoryService
     {
-        void AddResizeMapStep(int width, int height);
-        void AddStep(
+        Task AddResizeMapStepAsync(int width, int height);
+        Task AddStep(
             MapPosition? positionBeforeCommand,
             MapPosition? positionAfterCommand,
             string command,
@@ -20,15 +20,15 @@ namespace ToyRobot.Services
     }
     public class DummyRobotStepHistoryService : IRobotStepHistoryService
     {
-        public void AddResizeMapStep(int width, int height)
-        { }
-        public void AddStep(
+        public async Task AddResizeMapStepAsync(int width, int height)
+        { await Task.CompletedTask; }
+        public async Task AddStep(
             MapPosition? positionBeforeCommand,
             MapPosition? positionAfterCommand,
             string command,
             bool commandExecuted,
             string? result
             )
-        { }
+        { await Task.CompletedTask; }
     }
 }
