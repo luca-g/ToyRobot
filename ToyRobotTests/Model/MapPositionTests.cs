@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using ToyRobot.Common.Model;
 
 namespace ToyRobot.Model.Tests;
 

@@ -73,7 +73,7 @@ internal class ConsoleService : IHostedService
             if (cancellationToken.IsCancellationRequested)
                 return;
             _logger.LogError(ex, "Unexpected Error");
-            Console.WriteLine("Unexpected error: ", ex.Message);
+            Console.WriteLine("Unexpected error: {0}", ex.Message);
         }
     }
 }

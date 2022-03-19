@@ -4,6 +4,7 @@ using ToyRobot.Configuration;
 using Moq;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ToyRobot.Common.Model;
 
 namespace ToyRobot.Services.Tests;
 
@@ -21,7 +22,7 @@ public class MapServiceTests
         }
     }
 
-    MapService _mapService;
+    readonly MapService _mapService;
 
     public MapServiceTests()
     {

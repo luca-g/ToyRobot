@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using ToyRobot.Common.Model;
+using ToyRobot.Common.Services;
 using ToyRobot.Model;
 
 namespace ToyRobot.Services;
@@ -6,7 +8,7 @@ namespace ToyRobot.Services;
 public class RobotService
 {
     private MapPosition? _mapPosition;
-    private MapService _map;
+    private readonly MapService _map;
     private readonly ILogger<RobotService> _logger;
     private readonly IRobotStepHistoryService _robotStepHistoryService;
     public RobotService(ILogger<RobotService> logger, MapService map, IRobotStepHistoryService robotStepHistoryService)
@@ -41,7 +43,7 @@ public class RobotService
             switch (commandParts[0])
             {
                 case "PLACE":
-                    if (commandParts.Count() != 4)
+                    if (commandParts.Length != 4)
                     {
                         this._logger.LogTrace("PLACE command count error");
                         isValidCommand = false;
@@ -79,7 +81,7 @@ public class RobotService
                     this._logger.LogTrace("PLACE command: robot at position {0},{1}", x, y);
                     break;
                 case "RESIZE":
-                    if (commandParts.Count() != 3)
+                    if (commandParts.Length != 3)
                     {
                         this._logger.LogTrace("RESIZE command count error");
                         isValidCommand = false;

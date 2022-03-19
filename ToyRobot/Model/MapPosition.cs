@@ -1,8 +1,10 @@
-﻿namespace ToyRobot.Model;
+﻿using ToyRobot.Common.Model;
 
-public class MapPosition : IMapPoint
+namespace ToyRobot.Model;
+
+public class MapPosition : IMapPosition, IMapPoint
 {
-    public MapOrientationEnum Orientation;
+    public MapOrientationEnum Orientation { get; private set; }
     public int X { get; private set; }
     public int Y { get; private set; }
 
@@ -20,60 +22,40 @@ public class MapPosition : IMapPoint
 
     public void Left()
     {
-        switch (this.Orientation)
+        this.Orientation = this.Orientation switch
         {
-            case MapOrientationEnum.NORTH:
-                this.Orientation = MapOrientationEnum.WEST;
-                break;
-            case MapOrientationEnum.EAST:
-                this.Orientation = MapOrientationEnum.NORTH;
-                break;
-            case MapOrientationEnum.SOUTH:
-                this.Orientation = MapOrientationEnum.EAST;
-                break;
-            case MapOrientationEnum.WEST:
-                this.Orientation = MapOrientationEnum.SOUTH;
-                break;
-            default:
-                throw new InvalidOperationException();
-        }
+            MapOrientationEnum.NORTH => MapOrientationEnum.WEST,
+            MapOrientationEnum.EAST => MapOrientationEnum.NORTH,
+            MapOrientationEnum.SOUTH => MapOrientationEnum.EAST,
+            MapOrientationEnum.WEST => MapOrientationEnum.SOUTH,
+            MapOrientationEnum.NOT_SET => throw new InvalidOperationException(),
+            _ => throw new InvalidOperationException(),
+        };
     }
 
     public void Right()
     {
-        switch (this.Orientation)
+        this.Orientation = this.Orientation switch
         {
-            case MapOrientationEnum.NORTH:
-                this.Orientation = MapOrientationEnum.EAST;
-                break;
-            case MapOrientationEnum.EAST:
-                this.Orientation = MapOrientationEnum.SOUTH;
-                break;
-            case MapOrientationEnum.SOUTH:
-                this.Orientation = MapOrientationEnum.WEST;
-                break;
-            case MapOrientationEnum.WEST:
-                this.Orientation = MapOrientationEnum.NORTH;
-                break;
-            default:
-                throw new InvalidOperationException();
-        }
+            MapOrientationEnum.NORTH => MapOrientationEnum.EAST,
+            MapOrientationEnum.EAST => MapOrientationEnum.SOUTH,
+            MapOrientationEnum.SOUTH => MapOrientationEnum.WEST,
+            MapOrientationEnum.WEST => MapOrientationEnum.NORTH,
+            MapOrientationEnum.NOT_SET => throw new InvalidOperationException(),
+            _ => throw new InvalidOperationException(),
+        };
     }
 
     public MapPosition Move()
     {
-        switch (this.Orientation)
+        return this.Orientation switch
         {
-            case MapOrientationEnum.NORTH:
-                return new MapPosition(this.X, this.Y + 1, this.Orientation);
-            case MapOrientationEnum.EAST:
-                return new MapPosition(this.X + 1, this.Y, this.Orientation);
-            case MapOrientationEnum.SOUTH:
-                return new MapPosition(this.X, this.Y - 1, this.Orientation);
-            case MapOrientationEnum.WEST:
-                return new MapPosition(this.X - 1, this.Y, this.Orientation);
-            default:
-                throw new InvalidOperationException();
-        }
+            MapOrientationEnum.NORTH => new MapPosition(this.X, this.Y + 1, this.Orientation),
+            MapOrientationEnum.EAST => new MapPosition(this.X + 1, this.Y, this.Orientation),
+            MapOrientationEnum.SOUTH => new MapPosition(this.X, this.Y - 1, this.Orientation),
+            MapOrientationEnum.WEST => new MapPosition(this.X - 1, this.Y, this.Orientation),
+            MapOrientationEnum.NOT_SET => throw new InvalidOperationException(),
+            _ => throw new InvalidOperationException(),
+        };
     }
 }

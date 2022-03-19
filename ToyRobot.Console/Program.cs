@@ -3,13 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
+using ToyRobot.Common.Services;
 using ToyRobot.Services;
 
 namespace ToyRobot.Console;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         var logger = NLog.LogManager.GetCurrentClassLogger();
         logger.Info("Starting");

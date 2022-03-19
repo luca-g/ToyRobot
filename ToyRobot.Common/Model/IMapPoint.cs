@@ -1,4 +1,4 @@
-﻿namespace ToyRobot.Model;
+﻿namespace ToyRobot.Common.Model;
 
 public interface IMapPoint
 {

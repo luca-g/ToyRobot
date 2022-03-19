@@ -3,13 +3,14 @@ using Moq;
 using Microsoft.Extensions.Logging;
 using ToyRobot.Configuration;
 using Microsoft.Extensions.Options;
+using ToyRobot.Common.Services;
 
 namespace ToyRobot.Services.Tests;
 
 [TestClass()]
 public class RobotServiceTests
 {
-    private RobotService _robotService;
+    private readonly RobotService _robotService;
     public RobotServiceTests()
     {
         var mockLogger = new Mock<ILogger<MapService>>();

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ToyRobot.Common.Model;
 using ToyRobot.Configuration;
 using ToyRobot.Model;
 
