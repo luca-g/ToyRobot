@@ -1,6 +1,5 @@
 ﻿using ToyRobot.Common.Model;
 
-
 namespace ToyRobot.API.Model;
 
 public class RobotPosition

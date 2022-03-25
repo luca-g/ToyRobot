@@ -1,8 +1,10 @@
 ﻿namespace ToyRobot.Common.Model;
 
-public interface IMapPosition 
+public interface IMapPosition : IMapPoint
 {
-    public MapOrientationEnum Orientation { get; }
-    public int X { get; }
-    public int Y { get; }
+    MapOrientationEnum Orientation { get; }
+    IMapPosition Left();
+    IMapPosition Right();
+    IMapPosition Move();
+    string ToString() { return $"{X},{Y},{Orientation}"; }
 }

@@ -16,7 +16,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ToyRobot\ToyRobot.csproj" />
+    <ProjectReference Include="..\ToyRobot.Common\ToyRobot.Common.csproj" />
+    <ProjectReference Include="..\ToyRobot.Core\ToyRobot.Core.csproj" />
+    <ProjectReference Include="..\ToyRobot.SqlServerModel\ToyRobot.SqlServerModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

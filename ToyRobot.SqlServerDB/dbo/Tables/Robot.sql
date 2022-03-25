@@ -1,5 +1,5 @@
 ﻿CREATE TABLE [dbo].[Robot] (
-    [RobotId]       INT      NOT NULL,
+    [RobotId]       INT      IDENTITY (1, 1) NOT NULL,
     [PlayerId]      INT      NOT NULL,
     [MapId]         INT      NOT NULL,
     [X]             INT      NULL,
@@ -12,4 +12,6 @@
     CONSTRAINT [FK_Robot_Orientation] FOREIGN KEY ([OrientationId]) REFERENCES [ref].[Orientation] ([OrientationId]),
     CONSTRAINT [FK_Robot_Player] FOREIGN KEY ([PlayerId]) REFERENCES [dbo].[Player] ([PlayerId])
 );
+
+
 

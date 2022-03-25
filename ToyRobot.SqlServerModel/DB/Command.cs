@@ -11,6 +11,7 @@ namespace ToyRobot.SqlServerModel.DB
         public int RobotId { get; set; }
         public string CommandText { get; set; }
         public DateTime CommandDate { get; set; }
+        public string CommandResult { get; set; }
         public int? X { get; set; }
         public int? Y { get; set; }
         public int? OrientationId { get; set; }

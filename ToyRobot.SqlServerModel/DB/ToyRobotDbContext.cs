@@ -20,7 +20,6 @@ namespace ToyRobot.SqlServerModel.DB
 
         public virtual DbSet<Command> Command { get; set; }
         public virtual DbSet<Map> Map { get; set; }
-        public virtual DbSet<Orientation> Orientation { get; set; }
         public virtual DbSet<Player> Player { get; set; }
         public virtual DbSet<Robot> Robot { get; set; }
 
@@ -33,6 +32,8 @@ namespace ToyRobot.SqlServerModel.DB
                 entity.ToTable("Command", "log");
 
                 entity.Property(e => e.CommandDate).HasColumnType("datetime");
+
+                entity.Property(e => e.CommandResult).HasMaxLength(255);
 
                 entity.Property(e => e.CommandText).HasMaxLength(255);
 
@@ -50,33 +51,17 @@ namespace ToyRobot.SqlServerModel.DB
                 entity.Property(e => e.CreationDate).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletionDate).HasColumnType("datetime");
-
-                entity.HasOne(d => d.CreatedByPlayer)
-                    .WithMany(p => p.Map)
-                    .HasForeignKey(d => d.CreatedByPlayerId)
-                    .HasConstraintName("FK_Map_Player");
-            });
-
-            modelBuilder.Entity<Orientation>(entity =>
-            {
-                entity.ToTable("Orientation", "ref");
-
-                entity.Property(e => e.OrientationId).ValueGeneratedNever();
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(50);
             });
 
             modelBuilder.Entity<Player>(entity =>
             {
                 entity.Property(e => e.CreationDate).HasColumnType("datetime");
+
+                entity.Property(e => e.DeletionDate).HasColumnType("datetime");
             });
 
             modelBuilder.Entity<Robot>(entity =>
             {
-                entity.Property(e => e.RobotId).ValueGeneratedNever();
-
                 entity.Property(e => e.CreationDate).HasColumnType("datetime");
 
                 entity.Property(e => e.DeletionDate).HasColumnType("datetime");
@@ -87,11 +72,6 @@ namespace ToyRobot.SqlServerModel.DB
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Robot_Map");
 
-                entity.HasOne(d => d.Orientation)
-                    .WithMany(p => p.Robot)
-                    .HasForeignKey(d => d.OrientationId)
-                    .HasConstraintName("FK_Robot_Orientation");
-
                 entity.HasOne(d => d.Player)
                     .WithMany(p => p.Robot)
                     .HasForeignKey(d => d.PlayerId)
@@ -99,6 +79,7 @@ namespace ToyRobot.SqlServerModel.DB
                     .HasConstraintName("FK_Robot_Player");
             });
 
+            OnModelCreatingGeneratedProcedures(modelBuilder);
             OnModelCreatingPartial(modelBuilder);
         }
 

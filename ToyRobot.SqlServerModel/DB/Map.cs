@@ -13,14 +13,11 @@ namespace ToyRobot.SqlServerModel.DB
         }
 
         public int MapId { get; set; }
-        public int? CreatedByPlayerId { get; set; }
         public int Width { get; set; }
         public int Height { get; set; }
-        public int MaxRobots { get; set; }
         public DateTime CreationDate { get; set; }
         public DateTime? DeletionDate { get; set; }
 
-        public virtual Player CreatedByPlayer { get; set; }
         public virtual ICollection<Robot> Robot { get; set; }
     }
 }

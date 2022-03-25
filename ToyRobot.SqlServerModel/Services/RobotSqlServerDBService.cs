@@ -1,97 +1,120 @@
-﻿using System.Diagnostics;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
 using ToyRobot.SqlServerModel.DB;
 
-namespace ToyRobot.SqlServerModel.Services
+namespace ToyRobot.SqlServerModel.Services;
+
+public class RobotSqlServerDBService : IRobotService
 {
-    public class RobotSqlServerDBService : IRobotStepHistoryService
+    private readonly ILogger<RobotSqlServerDBService> loggerService;
+    private readonly ToyRobotDbContext toyRobotDbContext;
+
+    public RobotSqlServerDBService(
+        ILogger<RobotSqlServerDBService> logger, 
+        ToyRobotDbContext toyRobotDbContext
+        )
     {
-        public const int DefaultMaxRobots = 5;
+        this.loggerService = logger;
+        this.toyRobotDbContext = toyRobotDbContext;
+    }
 
-        private readonly ToyRobotDbContext _toyRobotDbContext;
-        private readonly ILogger<RobotSqlServerDBService> _logger;
+    public IRobot? ActiveRobot { get; set; }
 
-        public Player? CurrentPlayer { get; private set; } = null;
-        public Robot? CurrentRobot { get; private set; } = null;
-        public Map? CurrentMap = null;
-        public RobotSqlServerDBService(ILogger<RobotSqlServerDBService> logger, ToyRobotDbContext toyRobotDbContext)
+    public async Task<IRobot> CreateRobot(int playerId, int mapId)
+    {
+        Debug.Assert(playerId > 0);
+        Debug.Assert(mapId > 0);
+        try
         {
-            this._toyRobotDbContext = toyRobotDbContext;
-            this._logger = logger;
-        }
-
-        public async Task AddResizeMapStepAsync(int width, int height)
-        {
-            Debug.Assert(CurrentPlayer != null);
-            try
+            loggerService.LogTrace("Creating robot for player {playerId} in map {mapId}", playerId, mapId);
+            var robot = new Robot
             {
-                if (CurrentMap != null && CurrentMap.Width == width && CurrentMap.Height == height)
+                CreationDate = DateTime.UtcNow,
+                PlayerId = playerId,
+                MapId = mapId
+            };
+            toyRobotDbContext.Robot.Add(robot);
+            await toyRobotDbContext.SaveChangesAsync();
+            Debug.Assert(robot.RobotId > 0);
+            loggerService.LogTrace("Created robot {RobotId} for player {playerId} in map {mapId}", robot.RobotId, playerId, mapId);
+            return (IRobot)robot;
+        }
+        catch (Exception ex)
+        {
+            loggerService.LogError(ex, "Error creating robot for player {playerId} in map {mapId}", playerId, mapId);
+            throw;
+        }
+    }
+
+    public async Task<IList<IRobot>> LoadRobots(int playerId, int? mapId)
+    {
+        Debug.Assert(playerId > 0);
+        try
+        {
+            loggerService.LogTrace("Loading robots for player {playerId} and map {mapId}", playerId, mapId);
+            var robots = await this.toyRobotDbContext.Procedures.LoadRobotsAsync(playerId, null, mapId);
+            if (robots == null)
+            {
+                return new List<IRobot>();
+            }
+            var result = robots
+                .Select(t => new Robot { PlayerId = t.PlayerId, MapId = t.MapId, X=t.X, Y=t.Y, OrientationId=t.OrientationId, CreationDate = t.CreationDate } as IRobot)
+                .ToList();
+            loggerService.LogTrace("Loadied robots for player {playerId} and map {mapId}", playerId, mapId);
+            return result;
+        }
+        catch (Exception ex)
+        {
+            loggerService.LogError(ex, "Error loading robots");
+            throw;
+        }
+    }
+
+    public async Task SetMapPosition(IRobot robot, IMapPosition? mapPosition)
+    {
+        try {
+            if (robot == null) throw new ArgumentNullException(nameof(robot));
+            loggerService.LogTrace("Setting map posiiton player {PlayerId}, robot {RobotId}", robot.Player.PlayerId, robot.RobotId);
+
+            Robot? ctxRobot;
+            if(robot is Robot robotObject)
+            {
+                ctxRobot = robotObject;
+            }
+            else
+            {
+                ctxRobot = await toyRobotDbContext.Robot.SingleOrDefaultAsync(t => t.RobotId == robot.RobotId);
+                if (ctxRobot == null)
                 {
-                    _logger.LogTrace("AddResizeMapStepAsync: map unchanged, same size");
+                    loggerService.LogTrace("Robot not found in the database");
                     return;
                 }
-                var existingMap = await _toyRobotDbContext.Map.FirstOrDefaultAsync(m => m.Width == width && m.Height == height && m.CreatedByPlayerId == CurrentPlayer.PlayerId);
-                if (existingMap != null)
-                {
-                    CurrentMap = existingMap;
-                    _logger.LogTrace("AddResizeMapStepAsync: existing map selected: id {0}, w {1}, h {2}", CurrentMap.MapId, CurrentMap.Width, CurrentMap.Height);
-                }
-                else
-                {
-                    var newMap = new Map { Width = width, Height = height, CreationDate = DateTime.UtcNow, CreatedByPlayerId = CurrentPlayer.PlayerId, MaxRobots = (CurrentMap?.MaxRobots ?? DefaultMaxRobots) };
-                    CurrentPlayer.Map.Add(newMap);
-                    await _toyRobotDbContext.SaveChangesAsync();
-                    CurrentMap = newMap;
-                    _logger.LogTrace("AddResizeMapStepAsync: new map created: id {0}, w {1}, h {2}", CurrentMap.MapId, CurrentMap.Width, CurrentMap.Height);
-                    Debug.Assert(CurrentMap?.MapId > 0);
-                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error");
-                throw;
-            }
-        }
 
-        public async Task AddStep(IMapPosition? positionBeforeCommand, IMapPosition? positionAfterCommand, string command, bool commandExecuted, string? result)
+            if (mapPosition == null)
+            {
+                ctxRobot.X = null;
+                ctxRobot.Y = null;
+                ctxRobot.OrientationId = null;
+            }
+            else
+            {
+                ctxRobot.X = mapPosition.X;
+                ctxRobot.Y = mapPosition.Y;
+                ctxRobot.OrientationId = (int)mapPosition.Orientation;
+            }
+            await robot.SetMapPosition(mapPosition);
+            await toyRobotDbContext.SaveChangesAsync();
+            loggerService.LogTrace("Robot map posiiton set player {PlayerId}, robot {RobotId},position {mapPosition}",
+                robot.Player.PlayerId, robot.RobotId, mapPosition?.ToString()??"null");
+        }
+        catch (Exception ex)
         {
-            Debug.Assert(CurrentPlayer != null);
-            Debug.Assert(CurrentRobot != null);
-            try
-            { 
-                if (commandExecuted)
-                {
-                    int? orientationId = null;
-                    if (positionAfterCommand!=null && positionAfterCommand.Orientation!=MapOrientationEnum.NOT_SET)
-                    {
-                        var orientation = await _toyRobotDbContext.Orientation.FirstOrDefaultAsync(t=>t.Name.Equals(positionAfterCommand.Orientation.ToString()));
-                        orientationId = orientation?.OrientationId;
-                        Debug.Assert(orientationId != null);
-                    }
-                    var commandObj = new Command { 
-                        CommandDate = DateTime.UtcNow, 
-                        CommandText = command,  
-                        OrientationId = orientationId, 
-                        RobotId = CurrentRobot.RobotId,
-                        X = positionAfterCommand?.X,
-                        Y = positionAfterCommand?.Y,                    
-                    };
-                    _toyRobotDbContext.Command.Add(commandObj);
-                    await _toyRobotDbContext.SaveChangesAsync();
-                    _logger.LogTrace("Command saved {0}", command);
-                }
-                else
-                    _logger.LogTrace("Command not saved because it was not executed");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Unexpected error");
-                throw;
-            }
+            loggerService.LogError(ex, "Error SetMapPosition");
+            throw;
         }
-
     }
 }

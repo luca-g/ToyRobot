@@ -4,7 +4,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using ToyRobot.Common.Services;
-using ToyRobot.Services;
 
 namespace ToyRobot.Console;
 
@@ -24,7 +23,8 @@ class Program
                  })
                  .ConfigureServices((hostContext, services) =>
                  {
-                     services.AddRobotServiceConfig(hostContext.Configuration);
+                     services.AddCommandServicesAndConfig(hostContext.Configuration);
+                     services.AddToyRobotSqlServerServices(hostContext);
                      services.AddScoped<IRobotStepHistoryService,DummyRobotStepHistoryService>();
                      services.AddHostedService<ConsoleService>();
                      services.AddLogging(loggingBuilder =>

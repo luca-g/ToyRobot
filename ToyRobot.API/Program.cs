@@ -22,7 +22,7 @@ class Program
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddRobotServiceConfig(hostContext.Configuration);
+                    //services.AddRobotServiceConfig(hostContext.Configuration);
                     services.AddLogging(loggingBuilder =>
                     {
                         loggingBuilder.ClearProviders();

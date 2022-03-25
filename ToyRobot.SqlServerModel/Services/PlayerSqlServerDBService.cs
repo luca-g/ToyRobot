@@ -7,14 +7,10 @@ using ToyRobot.SqlServerModel.DB;
 
 namespace ToyRobot.SqlServerModel.Services;
 
-internal class PlayerSqlServerDBService : IPlayerService
+public class PlayerSqlServerDBService : IPlayerService
 {
-    public int? PlayerId => CurrentPlayer?.PlayerId;
-    public Guid? PlayerIdentifier => CurrentPlayer?.Identifier;
-    public Player? CurrentPlayer {  get; private set; }
-    public IMap? CurrentMap { get; private set; }
+    public IPlayer? ActivePlayer { get; set; }
 
-    List<IMap>? Maps;
     private readonly ToyRobotDbContext _toyRobotDbContext;
     private readonly ILogger<PlayerSqlServerDBService> _logger;
 
@@ -24,78 +20,21 @@ internal class PlayerSqlServerDBService : IPlayerService
         this._logger = logger;
     }
 
-    public async Task<List<IMap>?> AvailableMaps()
-    {
-        Debug.Assert(PlayerId != null);
-        try
-        {
-            _logger.LogTrace("AvailableMaps: Loading maps for player {0}", PlayerId);
-            this.Maps = await _toyRobotDbContext
-                .Map
-                .Where(m => m.CreatedByPlayerId == PlayerId)
-                .OrderBy(t => t.Width)
-                .ThenBy(t => t.Height)
-                .Select(t => t as IMap)
-                .ToListAsync();
-            _logger.LogTrace("AvailableMaps: Loaded maps for player {0}, maps found: {1}", PlayerId, this.Maps.Count);
-            return this.Maps;
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex, "Error loading maps");
-            throw;
-        }
-    }
-
-    public async Task<IMap> CreateMap(int width, int heigth)
-    {
-        Debug.Assert(CurrentPlayer!=null);
-        try
-        {
-            _logger.LogTrace("CreateMap looking for existing map of same size - player {0}", PlayerId);
-            var map = await _toyRobotDbContext
-                .Map
-                .FirstOrDefaultAsync(m => m.CreatedByPlayerId == PlayerId && m.Width == width && m.Height == heigth);
-            if (map != null)
-            {
-                _logger.LogTrace("CreateMap found map of same size - player {0}, map {1}", PlayerId, map.MapId);
-                return map;
-            }
-            map = new Map
-            {
-                Width = width,
-                Height = heigth,
-                CreatedByPlayerId = PlayerId,
-                CreationDate = DateTime.UtcNow,
-                MaxRobots = RobotSqlServerDBService.DefaultMaxRobots
-            };
-            CurrentPlayer.Map.Add(map);
-            await _toyRobotDbContext.SaveChangesAsync();
-            Debug.Assert(map.MapId > 0);
-            _logger.LogTrace("CreateMap: map created - player {0}, map {1}", PlayerId, map.MapId);
-            return map;
-        }
-        catch(Exception ex)
-        {
-            _logger.LogError(ex, "Error creating map");
-            throw;
-        }
-    }
-
-    public async Task CreatePlayer()
+    public async Task<IPlayer> CreatePlayer()
     {
         try
         {
             _logger.LogTrace("CreatePlayer: creating player");
-            CurrentPlayer = new Player
+            var player = new Player
             {
                 CreationDate = DateTime.UtcNow,
                 Identifier = Guid.NewGuid()
             };
-            _toyRobotDbContext.Player.Add(CurrentPlayer);
-            await _toyRobotDbContext.SaveChangesAsync();
-            _logger.LogTrace("CreatePlayer: player created - player {0}", PlayerId);
-
+            _toyRobotDbContext.Player.Add(player);
+            await _toyRobotDbContext.SaveChangesAsync();            
+            this.ActivePlayer = player;
+            _logger.LogTrace("CreatePlayer: player created - player {PlayerId}", this.ActivePlayer.PlayerId);
+            return this.ActivePlayer;
         }
         catch (Exception ex)
         {
@@ -104,10 +43,24 @@ internal class PlayerSqlServerDBService : IPlayerService
         }
     }
 
-    public Task SetActiveMap(IMap map)
+    public async Task<IPlayer> LoadPlayer(Guid guid)
     {
-        this.CurrentMap = map;
-        _logger.LogTrace("SetActiveMap: map activated {0}", map.MapId);
-        return Task.CompletedTask;
+        try {
+            _logger.LogTrace("Loading player {guid}", guid);
+            var player = await _toyRobotDbContext.Player.SingleOrDefaultAsync(t=>t.PlayerGuid == guid);
+            if (player == null)
+            {
+                throw new Exception($"Player not found {guid}");
+            }
+            _logger.LogTrace("Loaded player {guid}",guid);
+            this.ActivePlayer = player;
+            return player;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading player");
+            throw;
+        }
     }
+
 }

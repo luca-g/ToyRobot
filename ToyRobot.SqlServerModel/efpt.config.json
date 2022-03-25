@@ -30,8 +30,16 @@
          "ObjectType": 0
       },
       {
-         "Name": "[ref].[Orientation]",
-         "ObjectType": 0
+         "Name": "[dbo].[DEV_ClearDatabase]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[LoadMaps]",
+         "ObjectType": 1
+      },
+      {
+         "Name": "[dbo].[LoadRobots]",
+         "ObjectType": 1
       }
    ],
    "UiHint": "ToyRobot.SqlServerDB\\ToyRobot.SqlServerDB.sqlproj",

@@ -9,15 +9,14 @@ namespace ToyRobot.SqlServerModel.DB
     {
         public Player()
         {
-            Map = new HashSet<Map>();
             Robot = new HashSet<Robot>();
         }
 
         public int PlayerId { get; set; }
         public Guid Identifier { get; set; }
         public DateTime CreationDate { get; set; }
+        public DateTime? DeletionDate { get; set; }
 
-        public virtual ICollection<Map> Map { get; set; }
         public virtual ICollection<Robot> Robot { get; set; }
     }
 }

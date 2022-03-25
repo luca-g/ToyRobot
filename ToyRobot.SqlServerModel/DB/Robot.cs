@@ -22,7 +22,6 @@ namespace ToyRobot.SqlServerModel.DB
         public DateTime? DeletionDate { get; set; }
 
         public virtual Map Map { get; set; }
-        public virtual Orientation Orientation { get; set; }
         public virtual Player Player { get; set; }
         public virtual ICollection<Command> Command { get; set; }
     }

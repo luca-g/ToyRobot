@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToyRobot.Common\ToyRobot.Common.csproj" />
-    <ProjectReference Include="..\ToyRobot\ToyRobot.csproj" />
+    <ProjectReference Include="..\ToyRobot.Core\ToyRobot.Core.csproj" />
   </ItemGroup>
 
 </Project>
