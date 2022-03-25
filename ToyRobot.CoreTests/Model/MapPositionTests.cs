@@ -25,8 +25,8 @@ public class MapPositionTests
     public void LeftTest(int x, int y, MapOrientationEnum mapOrientationEnum, MapOrientationEnum expected)
     {
         var mapPosition = new MapPosition(x, y, mapOrientationEnum);
-        mapPosition.Left();
-        Assert.AreEqual(mapPosition.Orientation, expected);
+        var newPosition = mapPosition.Left();
+        Assert.AreEqual(newPosition.Orientation, expected);
     }
 
     [TestMethod()]
@@ -37,8 +37,8 @@ public class MapPositionTests
     public void RightTest(int x, int y, MapOrientationEnum mapOrientationEnum, MapOrientationEnum expected)
     {
         var mapPosition = new MapPosition(x, y, mapOrientationEnum);
-        mapPosition.Right();
-        Assert.AreEqual(mapPosition.Orientation, expected);
+        var newPosition = mapPosition.Right();
+        Assert.AreEqual(newPosition.Orientation, expected);
     }
 
     [TestMethod()]
