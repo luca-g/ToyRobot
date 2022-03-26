@@ -32,7 +32,11 @@ public class CreateRobotCommandService : ICommand
         try
         {
             Debug.Assert(playerService.ActivePlayer != null);
-            Debug.Assert(mapService.ActiveMap != null);            
+            if(mapService.ActiveMap == null)
+            {
+                this.ExecuteResult = "The map is not selected";
+                return false;
+            }
             robotService.ActiveRobot = await robotService.CreateRobot(
                 playerService.ActivePlayer.PlayerId, mapService.ActiveMap.MapId);
             if (robotService.ActiveRobot == null)

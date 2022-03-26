@@ -17,6 +17,8 @@ public class MockServicesHelper<T>
     Mock<IRobot>? mockRobot = null;
     Mock<IPlayer>? mockPlayer = null;
 
+    public int SetPositionCalled = 0;
+
     public MockServicesHelper<T> CreateMapSetup()
     {
         if (mockMap == null)
@@ -41,6 +43,12 @@ public class MockServicesHelper<T>
         this.RobotService
             .Setup(t => t.CreateRobot(It.IsAny<int>(), It.IsAny<int>()))
             .Returns(Task.FromResult(mockRobot.Object));
+        RobotService
+            .Setup(t => t.SetMapPosition(It.IsAny<IRobot>(), It.IsAny<IMapPosition?>()))
+            .Callback(() => mockRobot.Object.SetMapPosition((new Mock<IMapPosition>()).Object));
+        mockRobot
+            .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition?>()))
+            .Callback(() => SetPositionCalled++);
         return this;
     }
 
@@ -56,6 +64,12 @@ public class MockServicesHelper<T>
             mockRobot.SetupGet(t => t.Map).Returns(mockMap.Object);
             mockRobot.SetupGet(t => t.Player).Returns(mockPlayer.Object);
             mockRobot.SetupGet(t => t.Position);
+            RobotService
+               .Setup(t => t.SetMapPosition(It.IsAny<IRobot>(), It.IsAny<IMapPosition?>()))
+               .Callback(() => mockRobot.Object.SetMapPosition((new Mock<IMapPosition>()).Object));
+            mockRobot
+                .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition?>()))
+                .Callback(() => SetPositionCalled++);
         }
         else
             mockRobot = null;
@@ -64,6 +78,7 @@ public class MockServicesHelper<T>
             .SetupProperty(t => t.ActiveRobot, mockRobot?.Object);
         return this;
     }
+
     public MockServicesHelper<T> SetActiveRobotPosition(int? x, int? y, MapOrientationEnum? orientationEnum)
     {
         Debug.Assert(mockRobot != null);
@@ -85,10 +100,16 @@ public class MockServicesHelper<T>
             mockPosition.Setup(t => t.Move()).Returns(mockPositionLRMove.Object);
         }
         mockRobot.SetupGet(t => t.Position).Returns(mockPosition?.Object);
+        RobotService
+            .Setup(t => t.SetMapPosition(It.IsAny<IRobot>(), It.IsAny<IMapPosition?>()))
+            .Callback(() => mockRobot.Object.SetMapPosition((new Mock<IMapPosition>()).Object));
+        mockRobot
+            .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition?>()))        
+            .Callback(() => SetPositionCalled++);
         return this;
     }
 
-    public MockServicesHelper<T> ActiveMapSetupProperty(int? value)
+    public MockServicesHelper<T> ActiveMapSetupProperty(int? value, bool isInMapResult = true)
     {        
         if (value.HasValue)
         {
@@ -100,7 +121,7 @@ public class MockServicesHelper<T>
             mockMap.SetupGet(t => t.Width).Returns(5);
             mockMap.SetupGet(t => t.Height).Returns(5);
             mockMap.Setup(t => t.Size()).Returns("Width 5, Height 5");
-            mockMap.Setup(t => t.IsInMap(It.IsAny<IMapPoint>())).Returns(true);
+            mockMap.Setup(t => t.IsInMap(It.IsAny<IMapPoint>())).Returns(isInMapResult);
         }        
         this.MapService
             .SetupProperty(t => t.ActiveMap, mockMap?.Object);

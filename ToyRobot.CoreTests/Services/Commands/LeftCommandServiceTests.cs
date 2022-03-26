@@ -42,5 +42,46 @@ public class LeftCommandServiceTests
         var result = await leftCommandService.Execute();
 
         Assert.AreEqual(true, result);
+        Assert.AreEqual(1, mock.SetPositionCalled);
+    }
+    [TestMethod()]
+    [DataRow("LEFT")]
+    public async Task ExecuteTest_NoActiveRobot(string command)
+    {
+        var mock = new MockServicesHelper<LeftCommandService>();
+        mock.ActivePlayerSetupProperty(1)
+            .ActiveMapSetupProperty(1);
+        var leftCommandService = new LeftCommandService(
+            mock.Logger.Object,
+            mock.RobotService.Object);
+
+        var parts = command.Split(new char[] { ' ', ',' });
+        Assert.AreEqual(true, leftCommandService.TryParse(parts));
+
+        var result = await leftCommandService.Execute();
+
+        Assert.AreEqual(false, result);
+        Assert.AreEqual(0, mock.SetPositionCalled);
+    }
+    [TestMethod()]
+    [DataRow("LEFT")]
+    public async Task ExecuteTest_RobotOutOfMap(string command)
+    {
+        var mock = new MockServicesHelper<LeftCommandService>();
+        mock.ActivePlayerSetupProperty(1)
+            .ActiveMapSetupProperty(1)
+            .ActiveRobotSetupProperty(1)
+            .SetActiveRobotPosition(null,null,null);
+        var leftCommandService = new LeftCommandService(
+            mock.Logger.Object,
+            mock.RobotService.Object);
+
+        var parts = command.Split(new char[] { ' ', ',' });
+        Assert.AreEqual(true, leftCommandService.TryParse(parts));
+
+        var result = await leftCommandService.Execute();
+
+        Assert.AreEqual(false, result);
+        Assert.AreEqual(0, mock.SetPositionCalled);
     }
 }

@@ -28,11 +28,6 @@ public class MoveCommandService : ICommand
                 this.loggerService.LogTrace("MOVE command: active robot is null");
                 return false;
             }
-            if (robot.Map == null)
-            {
-                this.loggerService.LogTrace("MOVE command: the map is not selected");
-                return false;
-            }
             if (robot.Position == null)
             {
                 this.loggerService.LogTrace("MOVE command: The robot is not in the map");

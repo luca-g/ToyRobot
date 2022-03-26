@@ -42,4 +42,23 @@ public class SizeCommandServiceTests
 
         Assert.AreEqual(true, result);
     }
+    [TestMethod()]
+    [DataRow("SIZE")]
+    public async Task ExecuteTest_NoActiveMap(string command)
+    {
+        var mock = new MockServicesHelper<SizeCommandService>();
+        mock.ActivePlayerSetupProperty(1);
+        var reportCommandService = new SizeCommandService(
+            mock.Logger.Object,
+            mock.MapService.Object);
+
+
+        var parts = command.Split(new char[] { ' ', ',' });
+        Assert.AreEqual(true, reportCommandService.TryParse(parts));
+
+        var result = await reportCommandService.Execute();
+
+        Assert.AreEqual(true, result);
+        Assert.IsTrue(reportCommandService.ExecuteResult?.StartsWith("Map not set"));
+    }
 }

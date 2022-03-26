@@ -25,7 +25,7 @@ public class ReportCommandService : ICommand
             if (robot == null)
             {
                 this.loggerService.LogTrace("REPORT command: active robot is null");
-                this.ExecuteResult = "Robot out of map";
+                this.ExecuteResult = "The current map has no robots";
                 return Task.FromResult(false);
             }
             if (robot.Position == null)

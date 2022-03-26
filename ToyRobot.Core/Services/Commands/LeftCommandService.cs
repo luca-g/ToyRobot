@@ -27,11 +27,6 @@ public class LeftCommandService : ICommand
                 this.loggerService.LogTrace("LEFT command: active robot is null");
                 return false;
             }
-            if (robot.Map == null)
-            {
-                this.loggerService.LogTrace("LEFT command: the map is not selected");
-                return false;
-            }
             if (robot.Position == null)
             {
                 this.loggerService.LogTrace("LEFT command: The robot is not in the map");

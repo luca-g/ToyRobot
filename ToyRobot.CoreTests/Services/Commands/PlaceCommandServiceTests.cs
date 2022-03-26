@@ -42,5 +42,48 @@ public class PlaceCommandServiceTests
 
         Assert.AreEqual(true, result);
         Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("OK"));
+        Assert.AreEqual(1, mock.SetPositionCalled);
+
+    }
+    [TestMethod()]
+    [DataRow("PLACE,5,5,NORTH")]
+    public async Task ExecuteTest_NoActiveRobot(string command)
+    {
+        var mock = new MockServicesHelper<PlaceCommandService>();
+        mock.ActivePlayerSetupProperty(1)
+            .ActiveMapSetupProperty(1);
+        var mapCommandService = new PlaceCommandService(
+            mock.Logger.Object,
+            mock.RobotService.Object);
+
+        var parts = command.Split(new char[] { ' ', ',' });
+        Assert.AreEqual(true, mapCommandService.TryParse(parts));
+
+        var result = await mapCommandService.Execute();
+
+        Assert.AreEqual(false, result);
+        Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("The current map has no robots"));
+        Assert.AreEqual(0, mock.SetPositionCalled);
+    }
+    [TestMethod()]
+    [DataRow("PLACE,5,5,NORTH")]
+    public async Task ExecuteTest_RobotOutOfMap(string command)
+    {
+        var mock = new MockServicesHelper<PlaceCommandService>();
+        mock.ActivePlayerSetupProperty(1)
+            .ActiveMapSetupProperty(1, false)
+            .ActiveRobotSetupProperty(1);
+        var mapCommandService = new PlaceCommandService(
+            mock.Logger.Object,
+            mock.RobotService.Object);
+
+        var parts = command.Split(new char[] { ' ', ',' });
+        Assert.AreEqual(true, mapCommandService.TryParse(parts));
+
+        var result = await mapCommandService.Execute();
+
+        Assert.AreEqual(false, result);
+        Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("The object is outside the map"));
+        Assert.AreEqual(0, mock.SetPositionCalled);
     }
 }

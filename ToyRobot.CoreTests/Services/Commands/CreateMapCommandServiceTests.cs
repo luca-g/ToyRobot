@@ -34,10 +34,7 @@ public class CreateMapCommandServiceTests
     public async Task ExecuteTest(string command)
     {
         var mock = new MockServicesHelper<CreateMapCommandService>();
-        mock.ActivePlayerSetupProperty(1)
-            .ActiveMapSetupProperty(1)
-            .ActiveRobotSetupProperty(1)
-            .CreateMapSetup();
+        mock.CreateMapSetup();
         var mapCommandService = new CreateMapCommandService(
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
@@ -51,5 +48,23 @@ public class CreateMapCommandServiceTests
 
         Assert.AreEqual(true, result);
         Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("Map created id"));
+    }
+    [TestMethod()]
+    [DataRow("CREATEMAP,5,5")]
+    public async Task ExecuteTest_NoMapCreated(string command)
+    {
+        var mock = new MockServicesHelper<CreateMapCommandService>();
+        var mapCommandService = new CreateMapCommandService(
+            mock.Logger.Object,
+            mock.RobotStepHistoryService.Object,
+            mock.MapService.Object,
+            mock.RobotService.Object);
+
+        var parts = command.Split(new char[] { ' ', ',' });
+        Assert.AreEqual(true, mapCommandService.TryParse(parts));
+
+        var result = await mapCommandService.Execute();
+
+        Assert.AreEqual(false, result);
     }
 }

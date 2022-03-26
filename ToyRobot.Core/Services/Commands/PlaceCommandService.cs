@@ -38,13 +38,6 @@ public class PlaceCommandService : ICommand
                 this.ExecuteResult = "The current map has no robots";
                 return false;
             }
-            if (robot.Map == null)
-            {
-                this.loggerService.LogTrace("PLACE command: the map is not selected");
-                this.ExecuteResult = "The map is not selected";
-                return false;
-            }
-
             var mapPositon = new MapPosition(x, y, mapOrientation);
             if (!robot.Map.IsInMap(mapPositon))
             {
