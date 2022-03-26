@@ -48,6 +48,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
             var parts = command.Split(new char[] { ' ', ',' });
             if (!createRobotCommand.TryParse(parts))
             {
+                Assert.AreEqual(false,parsed);
                 return;
             }
             var result = await createRobotCommand.Execute();

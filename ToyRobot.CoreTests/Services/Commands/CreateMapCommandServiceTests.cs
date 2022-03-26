@@ -1,9 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Moq;
-using Microsoft.Extensions.Logging;
-using ToyRobot.Common.Services;
-using ToyRobot.Common.Model;
 using ToyRobot.MockHelper;
 
 namespace ToyRobot.Core.Services.Commands.Tests;
@@ -38,7 +34,9 @@ public class CreateMapCommandServiceTests
     public async Task ExecuteTest(string command)
     {
         var mock = new MockServicesHelper<CreateMapCommandService>();
-        mock.ActiveRobotSetupProperty(1)
+        mock.ActivePlayerSetupProperty(1)
+            .ActiveMapSetupProperty(1)
+            .ActiveRobotSetupProperty(1)
             .CreateMapSetup();
         var mapCommandService = new CreateMapCommandService(
             mock.Logger.Object,

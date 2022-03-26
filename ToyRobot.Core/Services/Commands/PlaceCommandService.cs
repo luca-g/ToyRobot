@@ -6,7 +6,7 @@ using ToyRobot.Core.Model;
 
 namespace ToyRobot.Core.Services.Commands;
 
-internal class PlaceCommandService : ICommand
+public class PlaceCommandService : ICommand
 {
     public string FirstInstruction => "PLACE";
     public string ConsoleInstruction { get => "PLACE x,y,direction (NORTH,EAST,SOUTH,WEST)"; }
@@ -49,10 +49,12 @@ internal class PlaceCommandService : ICommand
             if (!robot.Map.IsInMap(mapPositon))
             {
                 this.loggerService.LogTrace("PLACE position set outside the map");
+                this.ExecuteResult = "The object is outside the map";
                 return false;
             }
             await this.robotService.SetMapPosition(robot, mapPositon);
             this.loggerService.LogTrace("PLACE command: robot at position {x},{y}", x, y);
+            this.ExecuteResult = "OK";
             return true;
         }
         catch (Exception ex)

@@ -4,7 +4,7 @@ using ToyRobot.Common.Services;
 
 namespace ToyRobot.Core.Services.Commands;
 
-internal class RightCommandService : ICommand
+public class RightCommandService : ICommand
 {
     public string FirstInstruction => "RIGHT";
     private readonly ILogger<RightCommandService> loggerService;

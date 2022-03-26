@@ -5,7 +5,7 @@ using ToyRobot.Core.Model;
 
 namespace ToyRobot.Core.Services.Commands;
 
-internal class MoveCommandService : ICommand
+public class MoveCommandService : ICommand
 {
     public string FirstInstruction => "MOVE";
     private readonly ILogger<MoveCommandService> loggerService;
