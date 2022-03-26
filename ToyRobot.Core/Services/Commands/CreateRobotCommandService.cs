@@ -9,13 +9,13 @@ public class CreateRobotCommandService : ICommand
 {
     public string FirstInstruction => "CREATEROBOT";
     public string ConsoleInstruction { get => "CREATEROBOT"; }
-    private readonly ILogger<CreateMapCommandService> loggerService;
+    private readonly ILogger<CreateRobotCommandService> loggerService;
     private readonly IMapService mapService;
     private readonly IRobotService robotService;
     private readonly IPlayerService playerService;
     public string? ExecuteResult { get; private set; }
     public CreateRobotCommandService(
-        ILogger<CreateMapCommandService> logger,
+        ILogger<CreateRobotCommandService> logger,
         IMapService mapService,
         IRobotService robotService,
         IPlayerService playerService

@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobot.Common", "ToyRobot
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobot.Core", "ToyRobot.Core\ToyRobot.Core.csproj", "{F67432C0-EF9A-4DF5-BEB6-7588CED1D036}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyRobot.CommonTests", "ToyRobot.CommonTests\ToyRobot.CommonTests.csproj", "{84790625-3EEA-412A-AC87-187DE7992802}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobot.CommonTests", "ToyRobot.CommonTests\ToyRobot.CommonTests.csproj", "{84790625-3EEA-412A-AC87-187DE7992802}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyRobot.CoreTests", "ToyRobot.CoreTests\ToyRobot.CoreTests.csproj", "{E4FB92FE-9018-4107-AD85-6CA502E7B7F0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToyRobot.CoreTests", "ToyRobot.CoreTests\ToyRobot.CoreTests.csproj", "{E4FB92FE-9018-4107-AD85-6CA502E7B7F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToyRobot.MockHelper", "ToyRobot.MockHelper\ToyRobot.MockHelper.csproj", "{9D343E70-7F7B-4815-AC11-D66A856EC43C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{E4FB92FE-9018-4107-AD85-6CA502E7B7F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4FB92FE-9018-4107-AD85-6CA502E7B7F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4FB92FE-9018-4107-AD85-6CA502E7B7F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D343E70-7F7B-4815-AC11-D66A856EC43C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D343E70-7F7B-4815-AC11-D66A856EC43C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D343E70-7F7B-4815-AC11-D66A856EC43C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D343E70-7F7B-4815-AC11-D66A856EC43C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

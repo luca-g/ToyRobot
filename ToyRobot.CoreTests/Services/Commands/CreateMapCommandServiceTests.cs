@@ -4,6 +4,7 @@ using Moq;
 using Microsoft.Extensions.Logging;
 using ToyRobot.Common.Services;
 using ToyRobot.Common.Model;
+using ToyRobot.MockHelper;
 
 namespace ToyRobot.Core.Services.Commands.Tests;
 
@@ -21,16 +22,12 @@ public class CreateMapCommandServiceTests
     [DataRow("CREATEMAP 5,5,5", false)]
     public void TryParseTest(string command, bool parsed)
     {
-        var mockLogger = new Mock<ILogger<CreateMapCommandService>>();
-        var mockMapService = new Mock<IMapService>();
-        var mockRobotService = new Mock<IRobotService>();
-        var mockRobotStepHistoryService = new Mock<IRobotStepHistoryService>();
-
+        var mock = new MockServicesHelper<CreateMapCommandService>();
         var mapCommandService = new CreateMapCommandService(
-            mockLogger.Object,
-            mockRobotStepHistoryService.Object,
-            mockMapService.Object,
-            mockRobotService.Object);
+            mock.Logger.Object,
+            mock.RobotStepHistoryService.Object,
+            mock.MapService.Object,
+            mock.RobotService.Object);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(parsed, mapCommandService.TryParse(parts));
@@ -40,27 +37,20 @@ public class CreateMapCommandServiceTests
     [DataRow("CREATEMAP,5,5")]
     public async Task ExecuteTest(string command)
     {
-        var mockLogger = new Mock<ILogger<CreateMapCommandService>>();
-        var mockMapService = new Mock<IMapService>();
-        mockMapService
-            .Setup(t=>t.CreateMap(It.IsAny<int>(),It.IsAny<int>()))
-            .Returns(Task.FromResult(new Mock<IMap>().Object));
-
-        var mockRobotService = new Mock<IRobotService>();
-        var mockRobotStepHistoryService = new Mock<IRobotStepHistoryService>();
-
+        var mock = new MockServicesHelper<CreateMapCommandService>();
+        mock.ActiveRobotSetupProperty(1)
+            .CreateMapSetup();
         var mapCommandService = new CreateMapCommandService(
-            mockLogger.Object,
-            mockRobotStepHistoryService.Object,
-            mockMapService.Object,
-            mockRobotService.Object);
+            mock.Logger.Object,
+            mock.RobotStepHistoryService.Object,
+            mock.MapService.Object,
+            mock.RobotService.Object);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, mapCommandService.TryParse(parts));
 
-        var mockRobot = new Mock<IRobot>();
-        mockRobotService.Object.ActiveRobot = mockRobot.Object;
-        var result = await mapCommandService.Execute();
+         var result = await mapCommandService.Execute();
+
         Assert.AreEqual(true, result);
         Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("Map created id"));
     }
