@@ -8,7 +8,7 @@ namespace ToyRobot.SqlServerModel.DB
     public partial class Command
     {
         public int CommandId { get; set; }
-        public int RobotId { get; set; }
+        public int? RobotId { get; set; }
         public string CommandText { get; set; }
         public DateTime CommandDate { get; set; }
         public string CommandResult { get; set; }

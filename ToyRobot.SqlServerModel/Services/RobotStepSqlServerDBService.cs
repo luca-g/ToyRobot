@@ -13,20 +13,21 @@ namespace ToyRobot.SqlServerModel.Services
 
         private readonly ToyRobotDbContext _toyRobotDbContext;
         private readonly ILogger<RobotStepSqlServerDBService> _logger;
+        private readonly IRobotService robotService;
 
-        public Player? CurrentPlayer { get; private set; } = null;
-        public Robot? CurrentRobot { get; private set; } = null;
-        public Map? CurrentMap = null;
-        public RobotStepSqlServerDBService(ILogger<RobotStepSqlServerDBService> logger, ToyRobotDbContext toyRobotDbContext)
+        public RobotStepSqlServerDBService(
+            ILogger<RobotStepSqlServerDBService> logger, 
+            ToyRobotDbContext toyRobotDbContext,
+            IRobotService robotService
+            )
         {
             this._toyRobotDbContext = toyRobotDbContext;
             this._logger = logger;
+            this.robotService = robotService;
         }
 
         public async Task AddStep(IMapPosition? positionBeforeCommand, IMapPosition? positionAfterCommand, string command, bool commandExecuted, string? result)
         {
-            Debug.Assert(CurrentPlayer != null);
-            Debug.Assert(CurrentRobot != null);
             try
             { 
                 if (commandExecuted)
@@ -40,7 +41,7 @@ namespace ToyRobot.SqlServerModel.Services
                         CommandDate = DateTime.UtcNow, 
                         CommandText = command,  
                         OrientationId = orientationId, 
-                        RobotId = CurrentRobot.RobotId,
+                        RobotId = robotService.ActiveRobot?.RobotId,
                         X = positionAfterCommand?.X,
                         Y = positionAfterCommand?.Y,                    
                     };

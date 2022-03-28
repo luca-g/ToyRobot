@@ -26,7 +26,7 @@ class Program
                  {
                      services.AddCommandServicesAndConfig(hostContext.Configuration);
                      services.AddToyRobotSqlServerServices(hostContext);
-                     services.AddScoped<IRobotStepHistoryService,DummyRobotStepHistoryService>();
+                     //services.AddScoped<IRobotStepHistoryService,DummyRobotStepHistoryService>();
                      services.AddHostedService<ConsoleService>();
                      services.AddLogging(loggingBuilder =>
                      {

@@ -42,7 +42,6 @@ namespace ToyRobot.SqlServerModel.DB
                 entity.HasOne(d => d.Robot)
                     .WithMany(p => p.Command)
                     .HasForeignKey(d => d.RobotId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Command_Robot");
             });
 

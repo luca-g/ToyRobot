@@ -1,7 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
-using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
 
 namespace ToyRobot.Console;
