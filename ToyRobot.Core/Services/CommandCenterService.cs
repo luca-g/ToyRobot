@@ -50,8 +50,8 @@ public class CommandCenterService : ICommandCenterService
                 foreach (var commandObj in commands)
                 {
                     executed |= await commandObj.Execute();
-                    if(commandObj.ExecuteResult != null)
-                        results.AppendLine(commandObj.ExecuteResult);
+                    if(commandObj.ExecuteResultText != null)
+                        results.AppendLine(commandObj.ExecuteResultText);
                 }
                 this.ExecuteResult = results.Length > 0 ? results.ToString() : null;
                 if(this.ExecuteResult != null && this.ExecuteResult.EndsWith("\r\n"))

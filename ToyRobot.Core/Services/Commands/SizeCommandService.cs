@@ -9,13 +9,19 @@ public class SizeCommandService : ICommand
     public string FirstInstruction => "SIZE";
     private readonly ILogger<SizeCommandService> loggerService;
     private readonly IMapService mapService;
-    public string? ExecuteResult { get; private set; }
+    private readonly IApplicationMessagesService applicationMessagesService;
+    public string? ExecuteResultText { get; set; }
+    public CommandResultEnum CommandResult { get; set; }
+
     public SizeCommandService(
         ILogger<SizeCommandService> logger,
-        IMapService mapService)
+        IMapService mapService,
+        IApplicationMessagesService applicationMessagesService
+        )
     {
         this.loggerService = logger;
         this.mapService = mapService;
+        this.applicationMessagesService = applicationMessagesService;
     }
     public Task<bool> Execute()
     {
@@ -23,13 +29,14 @@ public class SizeCommandService : ICommand
         {
             if (mapService.ActiveMap == null)
             {
-                this.ExecuteResult = "Map not set";
-                this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResult);
+                this.applicationMessagesService.SetResult(this, CommandResultEnum.ActiveMapNull);
+                this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResultText);
             }
             else
             {
-                this.ExecuteResult = mapService.ActiveMap?.Size();
-                this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResult);
+                this.ExecuteResultText = mapService.ActiveMap?.Size();
+                this.CommandResult = CommandResultEnum.Ok;
+                this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResultText);
             }
             return Task.FromResult(true);
         }

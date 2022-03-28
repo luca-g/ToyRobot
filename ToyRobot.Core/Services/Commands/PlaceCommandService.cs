@@ -10,20 +10,26 @@ public class PlaceCommandService : ICommand
 {
     public string FirstInstruction => "PLACE";
     public string ConsoleInstruction { get => "PLACE x,y,direction (NORTH,EAST,SOUTH,WEST)"; }
-    public string? ExecuteResult { get; private set; }
+    public string? ExecuteResultText { get; set; }
+    public CommandResultEnum CommandResult { get; set; }
 
     private readonly ILogger<PlaceCommandService> loggerService;
     private readonly IRobotService robotService;
+    private readonly IApplicationMessagesService applicationMessagesService;
     private string[]? commandParts=null;
     
     private int x;
     private int y;
     private MapOrientationEnum mapOrientation;
     
-    public PlaceCommandService(ILogger<PlaceCommandService> logger, IRobotService robotService)
+    public PlaceCommandService(
+        ILogger<PlaceCommandService> logger, 
+        IRobotService robotService,
+        IApplicationMessagesService applicationMessagesService)
     {
         this.loggerService = logger;
         this.robotService = robotService;
+        this.applicationMessagesService = applicationMessagesService;
     }
     public async Task<bool> Execute()
     {
@@ -35,19 +41,19 @@ public class PlaceCommandService : ICommand
             if (robot == null)
             {
                 this.loggerService.LogTrace("PLACE command: active robot is null");
-                this.ExecuteResult = "The current map has no robots";
+                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
                 return false;
             }
             var mapPositon = new MapPosition(x, y, mapOrientation);
             if (!robot.Map.IsInMap(mapPositon))
             {
                 this.loggerService.LogTrace("PLACE position set outside the map");
-                this.ExecuteResult = "The object is outside the map";
+                applicationMessagesService.SetResult(this, CommandResultEnum.RobotCannotMoveOutsideMap);
                 return false;
             }
             await this.robotService.SetMapPosition(robot, mapPositon);
             this.loggerService.LogTrace("PLACE command: robot at position {x},{y}", x, y);
-            this.ExecuteResult = "OK";
+            applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
             return true;
         }
         catch (Exception ex)

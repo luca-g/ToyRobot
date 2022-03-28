@@ -18,14 +18,15 @@ namespace ToyRobot.Core.Services.Commands.Tests
         public void TryParseTest(string command, bool parsed)
         {
             var mock = new MockServicesHelper<CreateRobotCommandService>();
-            var mapCommandService = new CreateRobotCommandService(
+            var createRobotCommand = new CreateRobotCommandService(
                 mock.Logger.Object,
                 mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object);
+                mock.PlayerService.Object,
+                mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
-            Assert.AreEqual(parsed, mapCommandService.TryParse(parts));
+            Assert.AreEqual(parsed, createRobotCommand.TryParse(parts));
         }
 
         [TestMethod()]
@@ -41,7 +42,8 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 mock.Logger.Object,
                 mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object);
+                mock.PlayerService.Object,
+                mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
             Assert.AreEqual(true, createRobotCommand.TryParse(parts));
@@ -49,7 +51,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
             var result = await createRobotCommand.Execute();
 
             Assert.AreEqual(true, result);
-            Assert.IsTrue(createRobotCommand.ExecuteResult?.StartsWith("Robot created id"));
+            Assert.AreEqual(createRobotCommand.CommandResult, CommandResultEnum.Ok);
         }
 
         [TestMethod()]
@@ -63,7 +65,8 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 mock.Logger.Object,
                 mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object);
+                mock.PlayerService.Object,
+                mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
             Assert.AreEqual(true, createRobotCommand.TryParse(parts));
@@ -71,7 +74,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
             var result = await createRobotCommand.Execute();
 
             Assert.AreEqual(false, result);
-            Assert.IsTrue(createRobotCommand.ExecuteResult?.StartsWith("The map is not selected"));
+            Assert.AreEqual(createRobotCommand.CommandResult, CommandResultEnum.ActiveMapNull);
         }
         [TestMethod()]
         [DataRow("CREATEROBOT")]
@@ -85,7 +88,8 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 mock.Logger.Object,
                 mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object);
+                mock.PlayerService.Object,
+                mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
             Assert.AreEqual(true, createRobotCommand.TryParse(parts));
@@ -93,7 +97,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
             var result = await createRobotCommand.Execute();
 
             Assert.AreEqual(false, result);
-            Assert.IsTrue(createRobotCommand.ExecuteResult?.StartsWith("Create robot failed"));
+            Assert.AreEqual(createRobotCommand.CommandResult, CommandResultEnum.CreateRobotFailed);
         }
 
     }

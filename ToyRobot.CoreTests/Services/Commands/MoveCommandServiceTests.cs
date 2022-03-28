@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using ToyRobot.Common.Model;
 using ToyRobot.MockHelper;
 
 
@@ -15,12 +16,13 @@ public class MoveCommandServiceTests
     public void TryParseTest(string command, bool parsed)
     {
         var mock = new MockServicesHelper<MoveCommandService>();
-        var leftCommandService = new MoveCommandService(
+        var moveCommandService = new MoveCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(parsed, leftCommandService.TryParse(parts));
+        Assert.AreEqual(parsed, moveCommandService.TryParse(parts));
     }
 
     [TestMethod()]
@@ -32,17 +34,19 @@ public class MoveCommandServiceTests
             .ActiveMapSetupProperty(1)
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(1, 1, Common.Model.MapOrientationEnum.NORTH);
-        var leftCommandService = new MoveCommandService(
+        var moveCommandService = new MoveCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, leftCommandService.TryParse(parts));
+        Assert.AreEqual(true, moveCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await moveCommandService.Execute();
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(1, mock.SetPositionCalled);
+        Assert.AreEqual(moveCommandService.CommandResult, CommandResultEnum.Ok);
     }
     [TestMethod()]
     [DataRow("MOVE")]
@@ -51,17 +55,19 @@ public class MoveCommandServiceTests
         var mock = new MockServicesHelper<MoveCommandService>();
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
-        var leftCommandService = new MoveCommandService(
+        var moveCommandService = new MoveCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, leftCommandService.TryParse(parts));
+        Assert.AreEqual(true, moveCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await moveCommandService.Execute();
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(moveCommandService.CommandResult, CommandResultEnum.ActiveRobotNull);
     }
     [TestMethod()]
     [DataRow("MOVE")]
@@ -72,17 +78,19 @@ public class MoveCommandServiceTests
             .ActiveMapSetupProperty(1)
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(null,null,null);
-        var leftCommandService = new MoveCommandService(
+        var moveCommandService = new MoveCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, leftCommandService.TryParse(parts));
+        Assert.AreEqual(true, moveCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await moveCommandService.Execute();
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(moveCommandService.CommandResult, CommandResultEnum.RobotPositionNull);
     }
     [TestMethod()]
     [DataRow("MOVE")]
@@ -93,16 +101,18 @@ public class MoveCommandServiceTests
             .ActiveMapSetupProperty(1, false)
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(1, 1, Common.Model.MapOrientationEnum.NORTH);
-        var leftCommandService = new MoveCommandService(
+        var moveCommandService = new MoveCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, leftCommandService.TryParse(parts));
+        Assert.AreEqual(true, moveCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await moveCommandService.Execute();
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(moveCommandService.CommandResult, CommandResultEnum.RobotCannotMoveOutsideMap);
     }
 }

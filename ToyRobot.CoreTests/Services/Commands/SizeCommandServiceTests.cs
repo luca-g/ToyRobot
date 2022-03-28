@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using ToyRobot.MockHelper;
+using ToyRobot.Common.Model;
 
 namespace ToyRobot.Core.Services.Commands.Tests;
 
@@ -15,12 +16,13 @@ public class SizeCommandServiceTests
     public void TryParseTest(string command, bool parsed)
     {
         var mock = new MockServicesHelper<SizeCommandService>();
-        var reportCommandService = new SizeCommandService(
+        var sizeCommandService = new SizeCommandService(
             mock.Logger.Object,
-            mock.MapService.Object);
+            mock.MapService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(parsed, reportCommandService.TryParse(parts));
+        Assert.AreEqual(parsed, sizeCommandService.TryParse(parts));
     }
 
     [TestMethod()]
@@ -30,17 +32,19 @@ public class SizeCommandServiceTests
         var mock = new MockServicesHelper<SizeCommandService>();
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
-        var reportCommandService = new SizeCommandService(
+        var sizeCommandService = new SizeCommandService(
             mock.Logger.Object,
-            mock.MapService.Object);
+            mock.MapService.Object,
+            mock.ApplicationMessageService);
 
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, reportCommandService.TryParse(parts));
+        Assert.AreEqual(true, sizeCommandService.TryParse(parts));
 
-        var result = await reportCommandService.Execute();
+        var result = await sizeCommandService.Execute();
 
         Assert.AreEqual(true, result);
+        Assert.AreEqual(sizeCommandService.CommandResult, CommandResultEnum.Ok);
     }
     [TestMethod()]
     [DataRow("SIZE")]
@@ -48,17 +52,18 @@ public class SizeCommandServiceTests
     {
         var mock = new MockServicesHelper<SizeCommandService>();
         mock.ActivePlayerSetupProperty(1);
-        var reportCommandService = new SizeCommandService(
+        var sizeCommandService = new SizeCommandService(
             mock.Logger.Object,
-            mock.MapService.Object);
+            mock.MapService.Object,
+            mock.ApplicationMessageService);
 
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, reportCommandService.TryParse(parts));
+        Assert.AreEqual(true, sizeCommandService.TryParse(parts));
 
-        var result = await reportCommandService.Execute();
+        var result = await sizeCommandService.Execute();
 
         Assert.AreEqual(true, result);
-        Assert.IsTrue(reportCommandService.ExecuteResult?.StartsWith("Map not set"));
+        Assert.AreEqual(sizeCommandService.CommandResult, CommandResultEnum.ActiveMapNull);
     }
 }

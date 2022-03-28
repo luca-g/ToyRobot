@@ -20,6 +20,7 @@ class Program
                  {
                      configApp.SetBasePath(System.IO.Directory.GetCurrentDirectory());
                      configApp.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                     configApp.AddJsonFile("Language/ApplicationMessages.en.json", optional: false, reloadOnChange: false);
                  })
                  .ConfigureServices((hostContext, services) =>
                  {

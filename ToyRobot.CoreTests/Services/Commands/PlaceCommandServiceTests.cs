@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using ToyRobot.Common.Model;
 using ToyRobot.MockHelper;
 
 namespace ToyRobot.Core.Services.Commands.Tests;
@@ -15,12 +16,13 @@ public class PlaceCommandServiceTests
     public void TryParseTest(string command, bool parsed)
     {
         var mock = new MockServicesHelper<PlaceCommandService>();
-        var mapCommandService = new PlaceCommandService(
+        var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(parsed, mapCommandService.TryParse(parts));
+        Assert.AreEqual(parsed, placeCommandService.TryParse(parts));
     }
 
     [TestMethod()]
@@ -31,19 +33,19 @@ public class PlaceCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1)
             .ActiveRobotSetupProperty(1);
-        var mapCommandService = new PlaceCommandService(
+        var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, mapCommandService.TryParse(parts));
+        Assert.AreEqual(true, placeCommandService.TryParse(parts));
 
-        var result = await mapCommandService.Execute();
+        var result = await placeCommandService.Execute();
 
         Assert.AreEqual(true, result);
-        Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("OK"));
         Assert.AreEqual(1, mock.SetPositionCalled);
-
+        Assert.AreEqual(placeCommandService.CommandResult, CommandResultEnum.Ok);
     }
     [TestMethod()]
     [DataRow("PLACE,5,5,NORTH")]
@@ -52,18 +54,19 @@ public class PlaceCommandServiceTests
         var mock = new MockServicesHelper<PlaceCommandService>();
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
-        var mapCommandService = new PlaceCommandService(
+        var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, mapCommandService.TryParse(parts));
+        Assert.AreEqual(true, placeCommandService.TryParse(parts));
 
-        var result = await mapCommandService.Execute();
+        var result = await placeCommandService.Execute();
 
         Assert.AreEqual(false, result);
-        Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("The current map has no robots"));
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(placeCommandService.CommandResult, CommandResultEnum.ActiveRobotNull);
     }
     [TestMethod()]
     [DataRow("PLACE,5,5,NORTH")]
@@ -73,17 +76,18 @@ public class PlaceCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1, false)
             .ActiveRobotSetupProperty(1);
-        var mapCommandService = new PlaceCommandService(
+        var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
-        Assert.AreEqual(true, mapCommandService.TryParse(parts));
+        Assert.AreEqual(true, placeCommandService.TryParse(parts));
 
-        var result = await mapCommandService.Execute();
+        var result = await placeCommandService.Execute();
 
         Assert.AreEqual(false, result);
-        Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("The object is outside the map"));
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(placeCommandService.CommandResult, CommandResultEnum.RobotCannotMoveOutsideMap);
     }
 }

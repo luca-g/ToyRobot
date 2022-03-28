@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Diagnostics;
+using ToyRobot.Common.Extensions;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
 
@@ -14,20 +15,25 @@ public class CreateMapCommandService : ICommand
     private readonly IRobotStepHistoryService robotStepHistoryService;
     private readonly IMapService mapService;
     private readonly IRobotService robotService;
-    public string? ExecuteResult { get; private set; }
+    private readonly IApplicationMessagesService applicationMessagesService;
+    public CommandResultEnum CommandResult { get; set; }
+    public string? ExecuteResultText { get; set; }
+
     private int w;
     private int h;
     public CreateMapCommandService(
         ILogger<CreateMapCommandService> logger, 
         IRobotStepHistoryService robotStepHistoryService, 
         IMapService mapService,
-        IRobotService robotService
+        IRobotService robotService,
+        IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
         this.robotStepHistoryService = robotStepHistoryService;
         this.mapService = mapService;
         this.robotService = robotService;
+        this.applicationMessagesService = applicationMessagesService;
     }
     public async Task<bool> Execute()
     {
@@ -40,6 +46,7 @@ public class CreateMapCommandService : ICommand
             var map = await mapService.CreateMap(this.w, this.h);
             if (map == null)
             {
+                applicationMessagesService.SetResult(this, CommandResultEnum.MapCreateError);
                 this.loggerService.LogError("CREATEMAP command: error creating the map");
                 return returnValue;
             }
@@ -47,7 +54,8 @@ public class CreateMapCommandService : ICommand
             robotService.ActiveRobot = null;
 
             this.loggerService.LogTrace("CREATEMAP command: map created id {MapId} size {w},{h}", map.MapId, this.w, this.h);
-            this.ExecuteResult = $"Map created id {map.MapId}";
+            applicationMessagesService.SetResult(this, CommandResultEnum.Ok, CommandResultEnum.MapCreatedIdWH, map.MapId, this.w, this.h);
+
             returnValue = true;
             return returnValue;
         }
@@ -60,7 +68,7 @@ public class CreateMapCommandService : ICommand
         finally
         {
             if(commandParts!=null && !inException)
-                await this.robotStepHistoryService.AddStep(commandParts[0], returnValue, this.ExecuteResult);
+                await this.robotStepHistoryService.AddStep(commandParts[0], returnValue, this.ExecuteResultText);
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using ToyRobot.Common.Model;
 using ToyRobot.MockHelper;
 
 
@@ -17,7 +18,8 @@ public class LeftCommandServiceTests
         var mock = new MockServicesHelper<LeftCommandService>();
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(parsed, leftCommandService.TryParse(parts));
@@ -34,7 +36,8 @@ public class LeftCommandServiceTests
             .SetActiveRobotPosition(1,1,Common.Model.MapOrientationEnum.NORTH);
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, leftCommandService.TryParse(parts));
@@ -43,6 +46,7 @@ public class LeftCommandServiceTests
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(1, mock.SetPositionCalled);
+        Assert.AreEqual(leftCommandService.CommandResult, CommandResultEnum.Ok);
     }
     [TestMethod()]
     [DataRow("LEFT")]
@@ -53,7 +57,8 @@ public class LeftCommandServiceTests
             .ActiveMapSetupProperty(1);
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, leftCommandService.TryParse(parts));
@@ -62,6 +67,7 @@ public class LeftCommandServiceTests
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(leftCommandService.CommandResult, CommandResultEnum.ActiveRobotNull);
     }
     [TestMethod()]
     [DataRow("LEFT")]
@@ -74,7 +80,8 @@ public class LeftCommandServiceTests
             .SetActiveRobotPosition(null,null,null);
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, leftCommandService.TryParse(parts));
@@ -83,5 +90,6 @@ public class LeftCommandServiceTests
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
+        Assert.AreEqual(leftCommandService.CommandResult, CommandResultEnum.RobotPositionNull);
     }
 }

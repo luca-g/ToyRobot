@@ -2,7 +2,8 @@
 
 public interface ICommand
 {
-    string? ExecuteResult { get => null; }
+    string? ExecuteResultText { get; set; }
+    CommandResultEnum CommandResult { get; set; }
     string FirstInstruction { get; }
     string ConsoleInstruction { get => FirstInstruction; }
     bool TryParse(string[] commandParts);

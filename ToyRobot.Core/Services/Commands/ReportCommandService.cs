@@ -9,13 +9,18 @@ public class ReportCommandService : ICommand
     public string FirstInstruction => "REPORT";
     private readonly ILogger<ReportCommandService> loggerService;
     private readonly IRobotService robotService;
-    public string? ExecuteResult { get; private set; }
+    private readonly IApplicationMessagesService applicationMessagesService;
+    public string? ExecuteResultText { get; set; }
+    public CommandResultEnum CommandResult { get; set; }
+
     public ReportCommandService(
         ILogger<ReportCommandService> logger,
-        IRobotService robotService)
+        IRobotService robotService,
+        IApplicationMessagesService applicationMessagesService)
     {
         this.loggerService = logger;
         this.robotService = robotService;
+        this.applicationMessagesService = applicationMessagesService;
     }
     public Task<bool> Execute()
     {
@@ -25,18 +30,19 @@ public class ReportCommandService : ICommand
             if (robot == null)
             {
                 this.loggerService.LogTrace("REPORT command: active robot is null");
-                this.ExecuteResult = "The current map has no robots";
+                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
                 return Task.FromResult(false);
             }
             if (robot.Position == null)
             {
-                this.ExecuteResult = "Robot out of map";
-                this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResult);
+                applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
+                this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResultText);
             }
             else
             {
-                this.ExecuteResult = robot.Position.ToString();
-                this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResult);
+                this.ExecuteResultText = robot.Position.ToString();
+                this.CommandResult = CommandResultEnum.Ok;
+                this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResultText);
             }
             return Task.FromResult(true);
         }

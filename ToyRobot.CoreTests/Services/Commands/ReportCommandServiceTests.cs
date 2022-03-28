@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using ToyRobot.Common.Model;
 using ToyRobot.MockHelper;
 
 namespace ToyRobot.Core.Services.Commands.Tests;
@@ -16,7 +17,8 @@ public class ReportCommandServiceTests
         var mock = new MockServicesHelper<ReportCommandService>();
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(parsed, reportCommandService.TryParse(parts));
@@ -32,7 +34,8 @@ public class ReportCommandServiceTests
             .ActiveRobotSetupProperty(1);
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, reportCommandService.TryParse(parts));
@@ -50,7 +53,8 @@ public class ReportCommandServiceTests
             .ActiveMapSetupProperty(1);
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, reportCommandService.TryParse(parts));
@@ -58,8 +62,7 @@ public class ReportCommandServiceTests
         var result = await reportCommandService.Execute();
 
         Assert.AreEqual(false, result);
-        Assert.IsTrue(reportCommandService.ExecuteResult?.StartsWith("The current map has no robots"));
-
+        Assert.AreEqual(reportCommandService.CommandResult, CommandResultEnum.ActiveRobotNull);
     }
     [TestMethod()]
     [DataRow("REPORT")]
@@ -72,7 +75,8 @@ public class ReportCommandServiceTests
             .SetActiveRobotPosition(null,null,null);
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, reportCommandService.TryParse(parts));
@@ -80,7 +84,6 @@ public class ReportCommandServiceTests
         var result = await reportCommandService.Execute();
 
         Assert.AreEqual(true, result);
-        Assert.IsTrue(reportCommandService.ExecuteResult?.StartsWith("Robot out of map"));
-
+        Assert.AreEqual(reportCommandService.CommandResult, CommandResultEnum.RobotPositionNull);
     }
 }

@@ -12,6 +12,8 @@ public class MockServicesHelper<T>
     public Mock<IPlayerService> PlayerService = new();
     public Mock<IRobotService> RobotService = new();
     public Mock<IRobotStepHistoryService> RobotStepHistoryService = new();
+    public IApplicationMessagesService ApplicationMessageService = new DefaultApplicationMessagesService();
+    public Mock<ICommandCenterService> CommandCenterService = new();
 
     Mock<IMap>? mockMap = null;
     Mock<IRobot>? mockRobot = null;

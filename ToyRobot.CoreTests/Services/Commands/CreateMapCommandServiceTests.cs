@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
+using ToyRobot.Common.Model;
 using ToyRobot.MockHelper;
 
 namespace ToyRobot.Core.Services.Commands.Tests;
@@ -23,7 +24,8 @@ public class CreateMapCommandServiceTests
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(parsed, mapCommandService.TryParse(parts));
@@ -39,15 +41,16 @@ public class CreateMapCommandServiceTests
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, mapCommandService.TryParse(parts));
 
-         var result = await mapCommandService.Execute();
+        var result = await mapCommandService.Execute();
 
         Assert.AreEqual(true, result);
-        Assert.IsTrue(mapCommandService.ExecuteResult?.StartsWith("Map created id"));
+        Assert.IsTrue(mapCommandService.CommandResult == CommandResultEnum.Ok);
     }
     [TestMethod()]
     [DataRow("CREATEMAP,5,5")]
@@ -58,7 +61,8 @@ public class CreateMapCommandServiceTests
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
-            mock.RobotService.Object);
+            mock.RobotService.Object,
+            mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, mapCommandService.TryParse(parts));
@@ -66,5 +70,6 @@ public class CreateMapCommandServiceTests
         var result = await mapCommandService.Execute();
 
         Assert.AreEqual(false, result);
+        Assert.IsTrue(mapCommandService.CommandResult == CommandResultEnum.MapCreateError);
     }
 }
