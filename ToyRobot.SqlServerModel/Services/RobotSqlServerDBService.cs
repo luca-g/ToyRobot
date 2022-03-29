@@ -55,7 +55,8 @@ public class RobotSqlServerDBService : IRobotService
         try
         {
             loggerService.LogTrace("Loading robots for player {playerId} and map {mapId}", playerId, mapId);
-            var robots = await this.toyRobotDbContext.Procedures.LoadRobotsAsync(playerId, null, mapId);
+            var outputParam = new OutputParameter<int>();
+            var robots = await this.toyRobotDbContext.Procedures.LoadRobotsAsync(playerId, null, mapId, outputParam);
             if (robots == null)
             {
                 return new List<IRobot>();

@@ -1,10 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Moq;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
 
-namespace ToyRobot.MockHelper;
+namespace ToyRobot.Core.Tests;
 public class MockServicesHelper<T>
 {
     public Mock<ILogger<T>> Logger = new();

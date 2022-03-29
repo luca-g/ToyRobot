@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using ToyRobot.Common.Model;
@@ -34,7 +33,8 @@ public class MapSqlServerDBService : IMapService
         try
         {
             loggerService.LogTrace("AvailableMaps: Loading maps for player {playerId}", playerId);
-            var maps = await toyRobotDbContext.Procedures.LoadMapsAsync(playerId);
+            var outputParam = new OutputParameter<int>();
+            var maps = await toyRobotDbContext.Procedures.LoadMapsAsync(playerId, outputParam);
             if(maps == null)
             {
                 return new List<IMap>();

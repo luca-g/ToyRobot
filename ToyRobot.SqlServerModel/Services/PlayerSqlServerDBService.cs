@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
@@ -47,7 +46,7 @@ public class PlayerSqlServerDBService : IPlayerService
     {
         try {
             _logger.LogTrace("Loading player {guid}", guid);
-            var player = await _toyRobotDbContext.Player.SingleOrDefaultAsync(t=>t.PlayerGuid == guid);
+            var player = await _toyRobotDbContext.Player.SingleOrDefaultAsync(t=>t.Identifier == guid);
             if (player == null)
             {
                 throw new Exception($"Player not found {guid}");

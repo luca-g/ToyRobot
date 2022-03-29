@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToyRobot.Core\ToyRobot.Core.csproj" />
-    <ProjectReference Include="..\ToyRobot.MockHelper\ToyRobot.MockHelper.csproj" />
   </ItemGroup>
 
 </Project>

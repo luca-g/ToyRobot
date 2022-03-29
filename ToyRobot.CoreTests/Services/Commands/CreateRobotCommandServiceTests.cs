@@ -1,10 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
-using ToyRobot.Common.Services;
-using Microsoft.Extensions.Logging;
 using ToyRobot.Common.Model;
-using ToyRobot.MockHelper;
 using System.Threading.Tasks;
+using ToyRobot.Core.Tests;
 
 namespace ToyRobot.Core.Services.Commands.Tests
 {

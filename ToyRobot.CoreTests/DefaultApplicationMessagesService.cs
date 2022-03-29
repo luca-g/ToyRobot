@@ -1,9 +1,11 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
+using System;
+using System.Collections.Generic;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
 
-namespace ToyRobot.MockHelper;
+namespace ToyRobot.Core.Tests;
 
 internal class DefaultApplicationMessagesService : IApplicationMessagesService
 {
