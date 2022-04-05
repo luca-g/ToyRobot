@@ -7,5 +7,5 @@ public interface ICommand
     string FirstInstruction { get; }
     string ConsoleInstruction { get => FirstInstruction; }
     bool TryParse(string[] commandParts);
-    Task<bool> Execute();
+    Task<bool> Execute(IScenario scenario);
 }

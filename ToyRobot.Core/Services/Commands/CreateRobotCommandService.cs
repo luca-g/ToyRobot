@@ -10,48 +10,41 @@ public class CreateRobotCommandService : ICommand
     public string FirstInstruction => "CREATEROBOT";
     public string ConsoleInstruction { get => "CREATEROBOT"; }
     private readonly ILogger<CreateRobotCommandService> loggerService;
-    private readonly IMapService mapService;
     private readonly IRobotService robotService;
-    private readonly IPlayerService playerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public CommandResultEnum CommandResult { get; set; }
     public string? ExecuteResultText { get; set; }
 
     public CreateRobotCommandService(
         ILogger<CreateRobotCommandService> logger,
-        IMapService mapService,
         IRobotService robotService,
-        IPlayerService playerService,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
-        this.mapService = mapService;
         this.robotService = robotService;
-        this.playerService = playerService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public async Task<bool> Execute()
+    public async Task<bool> Execute(IScenario scenario)
     {
         try
         {
-            Debug.Assert(playerService.ActivePlayer != null);
-            if(mapService.ActiveMap == null)
+            if(!scenario.IsMapSet ||  scenario.MapId == null)
             {
                 applicationMessagesService.SetResult(this, CommandResultEnum.ActiveMapNull);
                 return false;
             }
-            robotService.ActiveRobot = await robotService.CreateRobot(
-                playerService.ActivePlayer.PlayerId, mapService.ActiveMap.MapId);
-            if (robotService.ActiveRobot == null)
+            var robot = await robotService.CreateRobot(scenario.PlayerId, scenario.MapId.Value);
+            if (robot == null)
             {
                 this.loggerService.LogTrace("CREATEROBOT robot failed");
                 applicationMessagesService.SetResult(this, CommandResultEnum.CreateRobotFailed);
                 return false;
             }
+            await scenario.SetActiveRobot(robot);
             this.loggerService.LogTrace("CREATEROBOT command: player {PlayerId}, map {MapId} robot created {RobotId}", 
-                playerService.ActivePlayer.PlayerId, mapService.ActiveMap.MapId, robotService.ActiveRobot.RobotId);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok, CommandResultEnum.RobotCreatedId, robotService.ActiveRobot.RobotId);
+                scenario.PlayerId, scenario.MapId, scenario.RobotId);
+            applicationMessagesService.SetResult(this, CommandResultEnum.Ok, CommandResultEnum.RobotCreatedId, scenario.RobotId);
             return true;
         }
         catch (Exception ex)

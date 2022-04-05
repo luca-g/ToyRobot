@@ -24,6 +24,7 @@ BEGIN
 		AND (R.RobotId = @robotId OR @robotId IS NULL)
 	JOIN dbo.Player AS P
 		ON P.DeletionDate IS NULL
+		AND P.PlayerId = R.PlayerId
 		AND (P.PlayerId = @playerId OR @playerId IS NULL)
 	ORDER BY P.PlayerId,M.MapId,R.RobotId
 END

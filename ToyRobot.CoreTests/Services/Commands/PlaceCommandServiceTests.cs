@@ -18,7 +18,6 @@ public class PlaceCommandServiceTests
         var mock = new MockServicesHelper<PlaceCommandService>();
         var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
@@ -35,13 +34,12 @@ public class PlaceCommandServiceTests
             .ActiveRobotSetupProperty(1);
         var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, placeCommandService.TryParse(parts));
 
-        var result = await placeCommandService.Execute();
+        var result = await placeCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(1, mock.SetPositionCalled);
@@ -56,13 +54,12 @@ public class PlaceCommandServiceTests
             .ActiveMapSetupProperty(1);
         var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, placeCommandService.TryParse(parts));
 
-        var result = await placeCommandService.Execute();
+        var result = await placeCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
@@ -78,13 +75,12 @@ public class PlaceCommandServiceTests
             .ActiveRobotSetupProperty(1);
         var placeCommandService = new PlaceCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, placeCommandService.TryParse(parts));
 
-        var result = await placeCommandService.Execute();
+        var result = await placeCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);

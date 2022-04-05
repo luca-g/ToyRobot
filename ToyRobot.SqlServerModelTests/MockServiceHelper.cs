@@ -9,42 +9,37 @@ using ToyRobot.Core.Configuration;
 namespace ToyRobot.SqlServerModelTests;
 public class MockServicesHelper<T>
 {
+    public Mock<IScenario> Scenario = new();
     public Mock<ILogger<T>> Logger = new();
     public Mock<IPlayerService> PlayerService = new();
     public Mock<IRobotService> RobotService = new();
     public Mock<IOptions<MapSettings>> MapSettingsOptions = new();
-    Mock<IRobot>? mockRobot = null;
-    Mock<IPlayer>? mockPlayer = null;
-    
+
+    public int SetPositionCalled = 0;
+
     public MockServicesHelper<T> ActiveRobotSetupProperty(int? value)
     {
+        this.Scenario
+            .SetupGet(t => t.IsRobotSet).Returns(true);
+        this.Scenario
+            .SetupGet(t => t.IsRobotDeployed).Returns(true);
         if (value.HasValue)
         {
-            Debug.Assert(mockPlayer != null);
-
-            mockRobot = new();
-            mockRobot.SetupGet(t => t.RobotId).Returns(value.Value);
-            mockRobot.SetupGet(t => t.Player).Returns(mockPlayer.Object);
+            this.Scenario
+                .SetupGet(t => t.RobotId).Returns(value);
+            this.Scenario
+                .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition>()))
+                .Callback(() => SetPositionCalled++);
         }
-        else
-            mockRobot = null;
-
-        this.RobotService
-            .SetupProperty(t => t.ActiveRobot, mockRobot?.Object);
         return this;
     }
     public MockServicesHelper<T> ActivePlayerSetupProperty(int? value)
     {
         if (value.HasValue)
         {
-            if (mockPlayer == null)
-            {
-                mockPlayer = new Mock<IPlayer>();
-            }
-            mockPlayer.SetupGet(t => t.PlayerId).Returns(value.Value);
+            this.Scenario
+                .SetupGet(t => t.PlayerId).Returns(value.Value);
         }
-        this.PlayerService
-            .SetupProperty(t => t.ActivePlayer, mockPlayer?.Object);
         return this;
     }
 }

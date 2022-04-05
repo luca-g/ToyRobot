@@ -17,7 +17,6 @@ public class SizeCommandServiceTests
         var mock = new MockServicesHelper<SizeCommandService>();
         var sizeCommandService = new SizeCommandService(
             mock.Logger.Object,
-            mock.MapService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
@@ -33,14 +32,13 @@ public class SizeCommandServiceTests
             .ActiveMapSetupProperty(1);
         var sizeCommandService = new SizeCommandService(
             mock.Logger.Object,
-            mock.MapService.Object,
             mock.ApplicationMessageService);
 
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, sizeCommandService.TryParse(parts));
 
-        var result = await sizeCommandService.Execute();
+        var result = await sizeCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(sizeCommandService.CommandResult, CommandResultEnum.Ok);
@@ -53,14 +51,13 @@ public class SizeCommandServiceTests
         mock.ActivePlayerSetupProperty(1);
         var sizeCommandService = new SizeCommandService(
             mock.Logger.Object,
-            mock.MapService.Object,
             mock.ApplicationMessageService);
 
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, sizeCommandService.TryParse(parts));
 
-        var result = await sizeCommandService.Execute();
+        var result = await sizeCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(sizeCommandService.CommandResult, CommandResultEnum.ActiveMapNull);

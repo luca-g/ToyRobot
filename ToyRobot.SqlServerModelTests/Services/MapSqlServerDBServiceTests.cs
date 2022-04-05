@@ -16,9 +16,9 @@ public class MapSqlServerDBServiceTests : BaseServiceTest
         var mapSqlServerDBService = new MapSqlServerDBService(
             mock.Logger.Object,
             context,
-            mock.MapSettingsOptions.Object,
-            mock.PlayerService.Object);
-        var map = await mapSqlServerDBService.CreateMap(5, 5);
+            mock.MapSettingsOptions.Object);
+        var player = CreatePlayer(context);
+        var map = await mapSqlServerDBService.CreateMap(player.PlayerId, 5, 5);
         Assert.IsNotNull(map);
     }
     [TestMethod()]
@@ -34,8 +34,7 @@ public class MapSqlServerDBServiceTests : BaseServiceTest
         var mapSqlServerDBService = new MapSqlServerDBService(
             mock.Logger.Object,
             context,
-            mock.MapSettingsOptions.Object,
-            mock.PlayerService.Object);
+            mock.MapSettingsOptions.Object);
         var maps = await mapSqlServerDBService.LoadMaps(player.PlayerId);
         Assert.IsNotNull(maps);
         Assert.IsTrue(maps.Count==1);

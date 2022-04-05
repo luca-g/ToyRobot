@@ -7,5 +7,5 @@ public interface ICommandCenterService
     string? ExecuteResult { get; }
     bool CommandExecuted { get; }
     IList<ICommand> Commands { get; }
-    Task<bool> Execute(string command);
+    Task<bool> Execute(IScenario scenario, string command);
 }

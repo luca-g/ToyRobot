@@ -17,7 +17,6 @@ public class LeftCommandServiceTests
         var mock = new MockServicesHelper<LeftCommandService>();
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
@@ -35,13 +34,12 @@ public class LeftCommandServiceTests
             .SetActiveRobotPosition(1,1,Common.Model.MapOrientationEnum.NORTH);
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, leftCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await leftCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(1, mock.SetPositionCalled);
@@ -56,13 +54,12 @@ public class LeftCommandServiceTests
             .ActiveMapSetupProperty(1);
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, leftCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await leftCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);
@@ -79,13 +76,12 @@ public class LeftCommandServiceTests
             .SetActiveRobotPosition(null,null,null);
         var leftCommandService = new LeftCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, leftCommandService.TryParse(parts));
 
-        var result = await leftCommandService.Execute();
+        var result = await leftCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(0, mock.SetPositionCalled);

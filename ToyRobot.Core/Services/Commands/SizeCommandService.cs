@@ -8,33 +8,30 @@ public class SizeCommandService : ICommand
 {
     public string FirstInstruction => "SIZE";
     private readonly ILogger<SizeCommandService> loggerService;
-    private readonly IMapService mapService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public string? ExecuteResultText { get; set; }
     public CommandResultEnum CommandResult { get; set; }
 
     public SizeCommandService(
         ILogger<SizeCommandService> logger,
-        IMapService mapService,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
-        this.mapService = mapService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public Task<bool> Execute()
+    public Task<bool> Execute(IScenario scenario)
     {
         try
         {
-            if (mapService.ActiveMap == null)
+            if (!scenario.IsMapSet)
             {
                 this.applicationMessagesService.SetResult(this, CommandResultEnum.ActiveMapNull);
                 this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResultText);
             }
             else
             {
-                this.ExecuteResultText = mapService.ActiveMap?.Size();
+                this.ExecuteResultText = scenario.MapSize();
                 this.CommandResult = CommandResultEnum.Ok;
                 this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResultText);
             }

@@ -18,6 +18,7 @@ BEGIN
 		AND R.MapId = M.MapId	
 	JOIN dbo.Player AS P
 		ON P.DeletionDate IS NULL
+		AND R.PlayerId = P.PlayerId
 		AND (P.PlayerId = @playerId OR @playerId IS NULL)
 	ORDER BY P.PlayerId,M.Width,M.Height
 END

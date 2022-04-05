@@ -14,7 +14,6 @@ public class PlaceCommandService : ICommand
     public CommandResultEnum CommandResult { get; set; }
 
     private readonly ILogger<PlaceCommandService> loggerService;
-    private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;
     private string[]? commandParts=null;
     
@@ -24,34 +23,31 @@ public class PlaceCommandService : ICommand
     
     public PlaceCommandService(
         ILogger<PlaceCommandService> logger, 
-        IRobotService robotService,
         IApplicationMessagesService applicationMessagesService)
     {
         this.loggerService = logger;
-        this.robotService = robotService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public async Task<bool> Execute()
+    public async Task<bool> Execute(IScenario scenario)
     {
-        var robot = robotService.ActiveRobot;
         try
         {
             Debug.Assert(commandParts != null);
             Debug.Assert(commandParts.Length == 4);
-            if (robot == null)
+            if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("PLACE command: active robot is null");
                 applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
                 return false;
             }
             var mapPositon = new MapPosition(x, y, mapOrientation);
-            if (!robot.Map.IsInMap(mapPositon))
+            if (!scenario.IsInMap(mapPositon))
             {
                 this.loggerService.LogTrace("PLACE position set outside the map");
                 applicationMessagesService.SetResult(this, CommandResultEnum.RobotCannotMoveOutsideMap);
                 return false;
             }
-            await this.robotService.SetMapPosition(robot, mapPositon);
+            await scenario.SetMapPosition(mapPositon);
             this.loggerService.LogTrace("PLACE command: robot at position {x},{y}", x, y);
             applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
             return true;

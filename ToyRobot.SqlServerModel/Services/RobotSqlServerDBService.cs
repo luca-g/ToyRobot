@@ -7,7 +7,7 @@ using ToyRobot.SqlServerModel.DB;
 
 namespace ToyRobot.SqlServerModel.Services;
 
-public class RobotSqlServerDBService : IRobotService
+public class RobotSqlServerDBService : IRobotService, IRobotServiceDB
 {
     private readonly ILogger<RobotSqlServerDBService> loggerService;
     private readonly ToyRobotDbContext toyRobotDbContext;
@@ -74,11 +74,11 @@ public class RobotSqlServerDBService : IRobotService
         }
     }
 
-    public async Task SetMapPosition(IRobot robot, IMapPosition? mapPosition)
+    public async Task SaveMapPosition(IRobot robot, IMapPosition? mapPosition, int playerId)
     {
         try {
             if (robot == null) throw new ArgumentNullException(nameof(robot));
-            loggerService.LogTrace("Setting map posiiton player {PlayerId}, robot {RobotId}", robot.Player.PlayerId, robot.RobotId);
+            loggerService.LogTrace("Setting map posiiton player {PlayerId}, robot {RobotId}", playerId, robot.RobotId);
 
             Robot? ctxRobot;
             if(robot is Robot robotObject)
@@ -107,10 +107,9 @@ public class RobotSqlServerDBService : IRobotService
                 ctxRobot.Y = mapPosition.Y;
                 ctxRobot.OrientationId = (int)mapPosition.Orientation;
             }
-            await robot.SetMapPosition(mapPosition);
             await toyRobotDbContext.SaveChangesAsync();
             loggerService.LogTrace("Robot map posiiton set player {PlayerId}, robot {RobotId},position {mapPosition}",
-                robot.Player.PlayerId, robot.RobotId, mapPosition?.ToString()??"null");
+                playerId, robot.RobotId, mapPosition?.ToString()??"null");
         }
         catch (Exception ex)
         {

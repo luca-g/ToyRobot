@@ -12,37 +12,37 @@ public class LeftCommandService : ICommand
     public CommandResultEnum CommandResult {get; set;}
 
     private readonly ILogger<LeftCommandService> loggerService;
-    private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public LeftCommandService(
         ILogger<LeftCommandService> logger,
-        IRobotService robotService,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
-        this.robotService = robotService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public async Task<bool> Execute()
+    public async Task<bool> Execute(IScenario scenario)
     {
-        var robot = robotService.ActiveRobot;
         try
         {
-            if (robot == null)
+            if (!scenario.IsRobotSet)
             {
                 applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
                 this.loggerService.LogTrace("LEFT command: active robot is null");
                 return false;
             }
-            if (robot.Position == null)
+            if (!scenario.IsRobotDeployed)
             {
                 applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
                 this.loggerService.LogTrace("LEFT command: The robot is not in the map");
                 return false;
             }
-            var newPosition = robot.Position.Left();
-            await this.robotService.SetMapPosition(robot, newPosition);
+            var newPosition = scenario.RobotPosition?.Left();
+            if(newPosition == null)
+            {
+                throw new Exception("Unexpected null robot position");
+            }
+            await scenario.SetMapPosition(newPosition);
             this.loggerService.LogTrace("LEFT command: robot moved to position {Orientation}", newPosition.Orientation);
             applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
             return true;

@@ -23,10 +23,9 @@ class Program
                      configApp.AddJsonFile("Language/ApplicationMessages.en.json", optional: false, reloadOnChange: false);
                  })
                  .ConfigureServices((hostContext, services) =>
-                 {
+                 {                     
                      services.AddCommandServicesAndConfig(hostContext.Configuration);
                      services.AddToyRobotSqlServerServices(hostContext);
-                     //services.AddScoped<IRobotStepHistoryService,DummyRobotStepHistoryService>();
                      services.AddHostedService<ConsoleService>();
                      services.AddLogging(loggingBuilder =>
                      {
@@ -34,8 +33,10 @@ class Program
                          loggingBuilder.AddConfiguration(hostContext.Configuration.GetSection("Logging"));
                          loggingBuilder.AddNLog();
                      });
-                 });
-            await host.Build().RunAsync();
+                 })
+                 .Build();
+            ToyRobotServices.Instance.SetServiceProvider(host.Services);
+            await host.RunAsync();
         }
         catch (Exception ex)
         {

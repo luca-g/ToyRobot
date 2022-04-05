@@ -5,10 +5,6 @@ namespace ToyRobot.SqlServerModel.DB;
 
 public partial class Robot : IRobot
 {
-    IPlayer IRobot.Player => (IPlayer) this.Player;
-
-    IMap IRobot.Map => (IMap) this.Map;
-
     IMapPosition? IRobot.Position { 
         get {
             if (this.X != null && this.Y != null && this.OrientationId != null)
@@ -16,10 +12,14 @@ public partial class Robot : IRobot
                 return new MapPosition(this.X.Value, this.Y.Value, (MapOrientationEnum) this.OrientationId);
             }
             return null;
-        } 
-    } 
+        }
+        set
+        {
+            this.SetMapPosition(value);
+        }
+    }
 
-    Task IRobot.SetMapPosition(IMapPosition? mapPosition)
+    private void SetMapPosition(IMapPosition? mapPosition)
     {
         if(mapPosition == null)
         {
@@ -33,6 +33,5 @@ public partial class Robot : IRobot
             this.X = mapPosition.X;
             this.Y = mapPosition.Y;
         }
-        return Task.CompletedTask;
     }
 }

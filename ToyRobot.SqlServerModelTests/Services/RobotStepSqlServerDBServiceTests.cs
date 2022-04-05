@@ -1,9 +1,6 @@
-﻿using ToyRobot.SqlServerModel.Services;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
 using ToyRobot.SqlServerModelTests;
-using ToyRobot.Core.Model;
-using ToyRobot.Common.Model;
 using System.Linq;
 
 namespace ToyRobot.SqlServerModel.Services.Tests;
@@ -24,8 +21,7 @@ public class RobotStepSqlServerDBServiceTests : BaseServiceTest
 
         var robotStepSqlServerDBService = new RobotStepSqlServerDBService(
             mock.Logger.Object,
-            context,
-            mock.RobotService.Object);
+            context);
 
         int id;
         try
@@ -37,11 +33,9 @@ public class RobotStepSqlServerDBServiceTests : BaseServiceTest
             id = 0;
         }
         await robotStepSqlServerDBService.AddStep(
-                new MapPosition(1, 1, MapOrientationEnum.NORTH),
-                null,
+                mock.Scenario.Object,
                 "commandTest",
-                true,
-                "Ok"
+                true
             );
         var readCommand = context.Command
             .Where(t=>t.CommandId > id && t.CommandText=="commandTest")

@@ -17,9 +17,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
             var mock = new MockServicesHelper<CreateRobotCommandService>();
             var createRobotCommand = new CreateRobotCommandService(
                 mock.Logger.Object,
-                mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object,
                 mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
@@ -37,15 +35,13 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 .CreateRobotSetup();
             var createRobotCommand = new CreateRobotCommandService(
                 mock.Logger.Object,
-                mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object,
                 mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
             Assert.AreEqual(true, createRobotCommand.TryParse(parts));
 
-            var result = await createRobotCommand.Execute();
+            var result = await createRobotCommand.Execute(mock.Scenario.Object);
 
             Assert.AreEqual(true, result);
             Assert.AreEqual(createRobotCommand.CommandResult, CommandResultEnum.Ok);
@@ -60,15 +56,13 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 .CreateRobotSetup();
             var createRobotCommand = new CreateRobotCommandService(
                 mock.Logger.Object,
-                mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object,
                 mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
             Assert.AreEqual(true, createRobotCommand.TryParse(parts));
 
-            var result = await createRobotCommand.Execute();
+            var result = await createRobotCommand.Execute(mock.Scenario.Object);
 
             Assert.AreEqual(false, result);
             Assert.AreEqual(createRobotCommand.CommandResult, CommandResultEnum.ActiveMapNull);
@@ -83,15 +77,13 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 .ActiveRobotSetupProperty(null);
             var createRobotCommand = new CreateRobotCommandService(
                 mock.Logger.Object,
-                mock.MapService.Object,
                 mock.RobotService.Object,
-                mock.PlayerService.Object,
                 mock.ApplicationMessageService);
 
             var parts = command.Split(new char[] { ' ', ',' });
             Assert.AreEqual(true, createRobotCommand.TryParse(parts));
 
-            var result = await createRobotCommand.Execute();
+            var result = await createRobotCommand.Execute(mock.Scenario.Object);
 
             Assert.AreEqual(false, result);
             Assert.AreEqual(createRobotCommand.CommandResult, CommandResultEnum.CreateRobotFailed);

@@ -13,25 +13,21 @@ public class CommandCenterService : ICommandCenterService
     public IList<ICommand> Commands { get; }
     private readonly ILogger<CommandCenterService> loggerService;
     private readonly IRobotStepHistoryService robotStepHistoryService;
-    private readonly IRobotService robotService;
     public CommandCenterService(
         ILogger<CommandCenterService> logger, 
         IServiceProvider serviceProvider,
-        IRobotStepHistoryService robotStepHistoryService,
-        IRobotService robotService
-        )
+        IRobotStepHistoryService robotStepHistoryService
+    )
     {
         this.Commands = serviceProvider.GetServices<ICommand>().OrderBy(t=>t.ConsoleInstruction).ToList();
         this.loggerService = logger;
         this.robotStepHistoryService = robotStepHistoryService;
-        this.robotService = robotService;
     }
-    public async Task<bool> Execute(string command)
+    public async Task<bool> Execute(IScenario scenario, string command)
     {
-        var robot = robotService.ActiveRobot;
         this.ExecuteResult = null;
         this.CommandExecuted = false;
-        var previousMapPosition = robot?.Position;
+        var previousMapPosition = scenario.RobotPosition;
         try
         {
             this.loggerService.LogTrace("Execute command: {command}", command);
@@ -49,7 +45,7 @@ public class CommandCenterService : ICommandCenterService
                 var results = new StringBuilder();
                 foreach (var commandObj in commands)
                 {
-                    executed |= await commandObj.Execute();
+                    executed |= await commandObj.Execute(scenario);
                     if(commandObj.ExecuteResultText != null)
                         results.AppendLine(commandObj.ExecuteResultText);
                 }
@@ -62,7 +58,7 @@ public class CommandCenterService : ICommandCenterService
                 }
                 this.CommandExecuted = executed;
             }
-            await this.robotStepHistoryService.AddStep(previousMapPosition, robot?.Position, command, this.CommandExecuted, this.ExecuteResult);
+            await this.robotStepHistoryService.AddStep(previousMapPosition, scenario.RobotPosition, command, this.CommandExecuted, this.ExecuteResult);
 
             if (this.ExecuteResult == null && !this.CommandExecuted)
             {

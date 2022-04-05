@@ -11,6 +11,7 @@ public static class ToyRobotSqlServerServicesCollectionExtensions
     public static IServiceCollection AddToyRobotSqlServerServices(
          this IServiceCollection services, HostBuilderContext hostContext)
     {
+        services.AddSingleton<IFactoryService, FactorySqlServerDBService>();
         services.AddScoped<IMapService, MapSqlServerDBService>();
         services.AddScoped<IPlayerService, PlayerSqlServerDBService>();
         services.AddScoped<IRobotService, RobotSqlServerDBService>();
@@ -20,7 +21,7 @@ public static class ToyRobotSqlServerServicesCollectionExtensions
             options.UseSqlServer(hostContext.Configuration.GetSection("ConnectionStrings:SqlServer").Value);
         }
         );
-       ;
+       
         return services;
     }
 }

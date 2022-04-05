@@ -17,7 +17,6 @@ public class ReportCommandServiceTests
         var mock = new MockServicesHelper<ReportCommandService>();
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
@@ -34,13 +33,12 @@ public class ReportCommandServiceTests
             .ActiveRobotSetupProperty(1);
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, reportCommandService.TryParse(parts));
 
-        var result = await reportCommandService.Execute();
+        var result = await reportCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
     }
@@ -53,13 +51,12 @@ public class ReportCommandServiceTests
             .ActiveMapSetupProperty(1);
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, reportCommandService.TryParse(parts));
 
-        var result = await reportCommandService.Execute();
+        var result = await reportCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(false, result);
         Assert.AreEqual(reportCommandService.CommandResult, CommandResultEnum.ActiveRobotNull);
@@ -75,13 +72,12 @@ public class ReportCommandServiceTests
             .SetActiveRobotPosition(null,null,null);
         var reportCommandService = new ReportCommandService(
             mock.Logger.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, reportCommandService.TryParse(parts));
 
-        var result = await reportCommandService.Execute();
+        var result = await reportCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
         Assert.AreEqual(reportCommandService.CommandResult, CommandResultEnum.RobotPositionNull);

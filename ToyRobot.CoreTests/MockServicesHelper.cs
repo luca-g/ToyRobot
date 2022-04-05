@@ -8,6 +8,7 @@ using ToyRobot.Common.Services;
 namespace ToyRobot.Core.Tests;
 public class MockServicesHelper<T>
 {
+    public Mock<IScenario> Scenario = new();
     public Mock<ILogger<T>> Logger = new();
     public Mock<IMapService> MapService = new();
     public Mock<IPlayerService> PlayerService = new();
@@ -18,9 +19,9 @@ public class MockServicesHelper<T>
 
     Mock<IMap>? mockMap = null;
     Mock<IRobot>? mockRobot = null;
-    Mock<IPlayer>? mockPlayer = null;
 
     public int SetPositionCalled = 0;
+    public int SetActiveMapCalled = 0;
 
     public MockServicesHelper<T> CreateMapSetup()
     {
@@ -29,9 +30,13 @@ public class MockServicesHelper<T>
             mockMap = new();
         }
         mockMap.SetupGet(t => t.MapId).Returns(1);
+        Scenario.SetupGet(t=>t.PlayerId).Returns(1);
+        Scenario
+            .Setup(t => t.SetActiveMap(It.IsAny<IMap>()))
+            .Callback(() => SetActiveMapCalled++);
 
         this.MapService
-            .Setup(t => t.CreateMap(It.IsAny<int>(), It.IsAny<int>()))
+            .Setup(t => t.CreateMap(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>()))
             .Returns(Task.FromResult(mockMap.Object));
         return this;
     }
@@ -46,45 +51,28 @@ public class MockServicesHelper<T>
         this.RobotService
             .Setup(t => t.CreateRobot(It.IsAny<int>(), It.IsAny<int>()))
             .Returns(Task.FromResult(mockRobot.Object));
-        RobotService
-            .Setup(t => t.SetMapPosition(It.IsAny<IRobot>(), It.IsAny<IMapPosition?>()))
-            .Callback(() => mockRobot.Object.SetMapPosition((new Mock<IMapPosition>()).Object));
-        mockRobot
-            .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition?>()))
-            .Callback(() => SetPositionCalled++);
         return this;
     }
 
     public MockServicesHelper<T> ActiveRobotSetupProperty(int? value)
     {
+        this.Scenario
+            .SetupGet(t => t.IsRobotSet).Returns(true);
+        this.Scenario
+            .SetupGet(t => t.IsRobotDeployed).Returns(true);
         if (value.HasValue)
         {
-            Debug.Assert(mockMap != null);
-            Debug.Assert(mockPlayer != null);
-
-            mockRobot = new();
-            mockRobot.SetupGet(t => t.RobotId).Returns(value.Value);
-            mockRobot.SetupGet(t => t.Map).Returns(mockMap.Object);
-            mockRobot.SetupGet(t => t.Player).Returns(mockPlayer.Object);
-            mockRobot.SetupGet(t => t.Position);
-            RobotService
-               .Setup(t => t.SetMapPosition(It.IsAny<IRobot>(), It.IsAny<IMapPosition?>()))
-               .Callback(() => mockRobot.Object.SetMapPosition((new Mock<IMapPosition>()).Object));
-            mockRobot
-                .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition?>()))
+            this.Scenario
+                .SetupGet(t => t.RobotId).Returns(value);
+            this.Scenario
+                .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition>()))
                 .Callback(() => SetPositionCalled++);
         }
-        else
-            mockRobot = null;
-
-        this.RobotService
-            .SetupProperty(t => t.ActiveRobot, mockRobot?.Object);
         return this;
     }
 
     public MockServicesHelper<T> SetActiveRobotPosition(int? x, int? y, MapOrientationEnum? orientationEnum)
     {
-        Debug.Assert(mockRobot != null);
         Mock<IMapPosition>? mockPosition = null;
         if (x.HasValue && y.HasValue && orientationEnum.HasValue)
         {
@@ -102,46 +90,39 @@ public class MockServicesHelper<T>
             mockPosition.Setup(t => t.Right()).Returns(mockPositionLRMove.Object);
             mockPosition.Setup(t => t.Move()).Returns(mockPositionLRMove.Object);
         }
-        mockRobot.SetupGet(t => t.Position).Returns(mockPosition?.Object);
-        RobotService
-            .Setup(t => t.SetMapPosition(It.IsAny<IRobot>(), It.IsAny<IMapPosition?>()))
-            .Callback(() => mockRobot.Object.SetMapPosition((new Mock<IMapPosition>()).Object));
-        mockRobot
-            .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition?>()))        
+
+        this.Scenario
+            .SetupGet(t => t.IsRobotSet).Returns(true);
+        this.Scenario
+            .SetupGet(t => t.IsRobotDeployed).Returns(mockPosition!=null);
+        this.Scenario
+            .SetupGet(t => t.RobotId).Returns(1);
+        this.Scenario
+            .SetupGet(t => t.RobotPosition).Returns(mockPosition?.Object);
+
+        this.Scenario
+            .Setup(t => t.SetMapPosition(It.IsAny<IMapPosition>()))
             .Callback(() => SetPositionCalled++);
         return this;
     }
 
     public MockServicesHelper<T> ActiveMapSetupProperty(int? value, bool isInMapResult = true)
     {        
-        if (value.HasValue)
-        {
-            if (mockMap == null)
-            {
-                mockMap = new Mock<IMap>();
-            }
-            mockMap.SetupGet(t => t.MapId).Returns(value.Value);
-            mockMap.SetupGet(t => t.Width).Returns(5);
-            mockMap.SetupGet(t => t.Height).Returns(5);
-            mockMap.Setup(t => t.Size()).Returns("Width 5, Height 5");
-            mockMap.Setup(t => t.IsInMap(It.IsAny<IMapPoint>())).Returns(isInMapResult);
-        }        
-        this.MapService
-            .SetupProperty(t => t.ActiveMap, mockMap?.Object);
+        this.Scenario
+            .SetupGet(t => t.MapId).Returns(value);
+        this.Scenario
+            .SetupGet(t => t.IsMapSet).Returns(true);
+        this.Scenario
+            .Setup(t => t.IsInMap(It.IsAny<IMapPoint>())).Returns(isInMapResult);
         return this;
     }
     public MockServicesHelper<T> ActivePlayerSetupProperty(int? value)
     {
         if (value.HasValue)
         {
-            if (mockPlayer == null)
-            {
-                mockPlayer = new Mock<IPlayer>();
-            }
-            mockPlayer.SetupGet(t => t.PlayerId).Returns(value.Value);
+            this.Scenario
+                .SetupGet(t => t.PlayerId).Returns(value.Value);
         }
-        this.PlayerService
-            .SetupProperty(t => t.ActivePlayer, mockPlayer?.Object);
         return this;
     }
 }

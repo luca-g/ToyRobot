@@ -11,27 +11,25 @@ namespace ToyRobot.SqlServerModel.Services
     {
         public const int DefaultMaxRobots = 5;
 
-        private readonly ToyRobotDbContext _toyRobotDbContext;
-        private readonly ILogger<RobotStepSqlServerDBService> _logger;
-        private readonly IRobotService robotService;
+        private readonly ToyRobotDbContext toyRobotDbContext;
+        private readonly ILogger<RobotStepSqlServerDBService> logger;
 
         public RobotStepSqlServerDBService(
             ILogger<RobotStepSqlServerDBService> logger, 
-            ToyRobotDbContext toyRobotDbContext,
-            IRobotService robotService
+            ToyRobotDbContext toyRobotDbContext
             )
         {
-            this._toyRobotDbContext = toyRobotDbContext;
-            this._logger = logger;
-            this.robotService = robotService;
+            this.toyRobotDbContext = toyRobotDbContext;
+            this.logger = logger;
         }
 
-        public async Task AddStep(IMapPosition? positionBeforeCommand, IMapPosition? positionAfterCommand, string command, bool commandExecuted, string? result)
+        public async Task AddStep(IScenario scenario, string command, bool commandExecuted)
         {
             try
             { 
                 if (commandExecuted)
                 {
+                    var positionAfterCommand = scenario.RobotPosition;
                     int? orientationId = null;
                     if (positionAfterCommand!=null && positionAfterCommand.Orientation!=MapOrientationEnum.NOT_SET)
                     {
@@ -41,20 +39,20 @@ namespace ToyRobot.SqlServerModel.Services
                         CommandDate = DateTime.UtcNow, 
                         CommandText = command,  
                         OrientationId = orientationId, 
-                        RobotId = robotService.ActiveRobot?.RobotId,
+                        RobotId = scenario.RobotId,
                         X = positionAfterCommand?.X,
                         Y = positionAfterCommand?.Y,                    
                     };
-                    _toyRobotDbContext.Command.Add(commandObj);
-                    await _toyRobotDbContext.SaveChangesAsync();
-                    _logger.LogTrace("Command saved {command}", command);
+                    toyRobotDbContext.Command.Add(commandObj);
+                    await toyRobotDbContext.SaveChangesAsync();
+                    logger.LogTrace("Command saved {command}", command);
                 }
                 else
-                    _logger.LogTrace("Command not saved because it was not executed");
+                    logger.LogTrace("Command not saved because it was not executed");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Unexpected error");
+                logger.LogError(ex, "Unexpected error");
                 throw;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
 
 namespace ToyRobot.Console;
@@ -7,23 +8,17 @@ using Console = System.Console;
 
 internal class ConsoleService : IHostedService
 {
-    private readonly IRobotService robotService;
     private readonly ILogger<ConsoleService> loggerService;
     private readonly ICommandCenterService commandCenterService;
-    private readonly IPlayerService playerService;
-    private readonly IMapService mapService;
+    private readonly IFactoryService factoryService;
     public ConsoleService(
         ILogger<ConsoleService> logger, 
-        IRobotService robot, 
         ICommandCenterService commandCenterService,
-        IPlayerService playerService,
-        IMapService mapService)
+        IFactoryService factoryService)
     {
-        this.robotService = robot;
         this.loggerService = logger;
         this.commandCenterService = commandCenterService;
-        this.playerService = playerService;
-        this.mapService = mapService;
+        this.factoryService = factoryService;
     }
     public async Task StartAsync(CancellationToken cancellationToken)
     {
@@ -48,10 +43,8 @@ internal class ConsoleService : IHostedService
             }
             Console.WriteLine("");
 
-            var player = await playerService.CreatePlayer();
-            mapService.ActiveMap = await mapService.CreateMap(mapService.MapSettings.MinWidth, mapService.MapSettings.MinHeight);
-            robotService.ActiveRobot = await robotService.CreateRobot(player.PlayerId, mapService.ActiveMap.MapId);
-
+            var scenario = await factoryService.CreateScenario();
+            
             while (!cancellationToken.IsCancellationRequested)
             {
                 try
@@ -60,7 +53,7 @@ internal class ConsoleService : IHostedService
                     string? command = Console.ReadLine();
                     if (command != null)
                     {
-                        await commandCenterService.Execute(command);
+                        await commandCenterService.Execute(scenario, command);
                         Console.WriteLine(commandCenterService.ExecuteResult ?? "Invalid command");
                     }
                 }

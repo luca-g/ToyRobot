@@ -8,39 +8,35 @@ public class ReportCommandService : ICommand
 {
     public string FirstInstruction => "REPORT";
     private readonly ILogger<ReportCommandService> loggerService;
-    private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public string? ExecuteResultText { get; set; }
     public CommandResultEnum CommandResult { get; set; }
 
     public ReportCommandService(
         ILogger<ReportCommandService> logger,
-        IRobotService robotService,
         IApplicationMessagesService applicationMessagesService)
     {
         this.loggerService = logger;
-        this.robotService = robotService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public Task<bool> Execute()
+    public Task<bool> Execute(IScenario scenario)
     {
-        var robot = robotService.ActiveRobot;
         try
         {
-            if (robot == null)
+            if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("REPORT command: active robot is null");
                 applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
                 return Task.FromResult(false);
             }
-            if (robot.Position == null)
+            if (!scenario.IsRobotDeployed)
             {
                 applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
                 this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResultText);
             }
             else
             {
-                this.ExecuteResultText = robot.Position.ToString();
+                this.ExecuteResultText = scenario.RobotPosition?.ToString() ?? "position not set";
                 this.CommandResult = CommandResultEnum.Ok;
                 this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResultText);
             }

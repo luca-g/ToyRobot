@@ -24,7 +24,6 @@ public class CreateMapCommandServiceTests
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
@@ -41,15 +40,15 @@ public class CreateMapCommandServiceTests
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, mapCommandService.TryParse(parts));
 
-        var result = await mapCommandService.Execute();
+        var result = await mapCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(true, result);
+        Assert.AreEqual(1, mock.SetActiveMapCalled);
         Assert.IsTrue(mapCommandService.CommandResult == CommandResultEnum.Ok);
     }
     [TestMethod()]
@@ -61,13 +60,12 @@ public class CreateMapCommandServiceTests
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
-            mock.RobotService.Object,
             mock.ApplicationMessageService);
 
         var parts = command.Split(new char[] { ' ', ',' });
         Assert.AreEqual(true, mapCommandService.TryParse(parts));
 
-        var result = await mapCommandService.Execute();
+        var result = await mapCommandService.Execute(mock.Scenario.Object);
 
         Assert.AreEqual(false, result);
         Assert.IsTrue(mapCommandService.CommandResult == CommandResultEnum.MapCreateError);

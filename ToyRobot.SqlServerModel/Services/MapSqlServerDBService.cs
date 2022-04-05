@@ -12,17 +12,14 @@ public class MapSqlServerDBService : IMapService
 {
     private readonly ILogger<MapSqlServerDBService> loggerService;
     private readonly ToyRobotDbContext toyRobotDbContext;
-    private readonly IPlayerService playerService;
     public MapSqlServerDBService(
         ILogger<MapSqlServerDBService> logger, 
         ToyRobotDbContext toyRobotDbContext, 
-        IOptions<MapSettings> mapSettings,
-        IPlayerService playerService)
+        IOptions<MapSettings> mapSettings)
     {
         this.loggerService = logger;
         this.toyRobotDbContext = toyRobotDbContext;
         this.MapSettings = mapSettings.Value;
-        this.playerService = playerService;
     }
     public MapSettings MapSettings { get; private set; }
     public IMap? ActiveMap { get; set; }
@@ -52,11 +49,11 @@ public class MapSqlServerDBService : IMapService
         }
     }
 
-    public async Task<IMap> CreateMap(int width, int heigth)
+    public async Task<IMap> CreateMap(int playerId, int width, int heigth)
     {
         try
         {
-            loggerService.LogTrace("CreateMap looking for existing map of same size - player {playerId}", playerService.ActivePlayer?.PlayerId);
+            loggerService.LogTrace("CreateMap looking for existing map of same size - player {playerId}", playerId);
             var map = new Map
             {
                 Width = width,
@@ -67,7 +64,7 @@ public class MapSqlServerDBService : IMapService
             await toyRobotDbContext.SaveChangesAsync();
             Debug.Assert(map.MapId > 0);
             this.ActiveMap = map;
-            loggerService.LogTrace("CreateMap: map created - player {playerId}, map {MapId}", playerService.ActivePlayer?.PlayerId, map.MapId);
+            loggerService.LogTrace("CreateMap: map created - player {playerId}, map {MapId}", playerId, map.MapId);
             return map;
         }
         catch (Exception ex)

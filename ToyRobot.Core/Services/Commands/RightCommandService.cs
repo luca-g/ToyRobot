@@ -12,37 +12,33 @@ public class RightCommandService : ICommand
     public CommandResultEnum CommandResult { get; set; }
 
     private readonly ILogger<RightCommandService> loggerService;
-    private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public RightCommandService(
         ILogger<RightCommandService> logger, 
-        IRobotService robotService,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
-        this.robotService = robotService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public async Task<bool> Execute()
+    public async Task<bool> Execute(IScenario scenario)
     {
-        var robot = robotService.ActiveRobot;
         try
         {
-            if (robot == null)
+            if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("RIGHT command: active robot is null");
                 applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
                 return false;
             }
-            if (robot.Position == null)
+            if (!scenario.IsRobotDeployed || scenario.RobotPosition==null)
             {
                 this.loggerService.LogTrace("RIGHT command: The robot is not in the map");
                 applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
                 return false;
             }
-            var newPosition = robot.Position.Right();
-            await this.robotService.SetMapPosition(robot, newPosition);
+            var newPosition = scenario.RobotPosition.Right();
+            await scenario.SetMapPosition(newPosition);
             this.loggerService.LogTrace("RIGHT command: robot moved to position {Orientation}", newPosition.Orientation);
             applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
             return true;

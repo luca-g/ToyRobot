@@ -14,7 +14,6 @@ public class CreateMapCommandService : ICommand
     private string[]? commandParts = null;
     private readonly IRobotStepHistoryService robotStepHistoryService;
     private readonly IMapService mapService;
-    private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public CommandResultEnum CommandResult { get; set; }
     public string? ExecuteResultText { get; set; }
@@ -25,17 +24,15 @@ public class CreateMapCommandService : ICommand
         ILogger<CreateMapCommandService> logger, 
         IRobotStepHistoryService robotStepHistoryService, 
         IMapService mapService,
-        IRobotService robotService,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
         this.robotStepHistoryService = robotStepHistoryService;
         this.mapService = mapService;
-        this.robotService = robotService;
         this.applicationMessagesService = applicationMessagesService;
     }
-    public async Task<bool> Execute()
+    public async Task<bool> Execute(IScenario scenario)
     {
         var returnValue = false;
         var inException = false;
@@ -43,7 +40,7 @@ public class CreateMapCommandService : ICommand
         {
             Debug.Assert(commandParts != null);
             Debug.Assert(commandParts.Length == 3);
-            var map = await mapService.CreateMap(this.w, this.h);
+            var map = await mapService.CreateMap(scenario.PlayerId, this.w, this.h);
             if (map == null)
             {
                 applicationMessagesService.SetResult(this, CommandResultEnum.MapCreateError);
@@ -51,7 +48,7 @@ public class CreateMapCommandService : ICommand
                 return returnValue;
             }
 
-            robotService.ActiveRobot = null;
+            await scenario.SetActiveMap(map);
 
             this.loggerService.LogTrace("CREATEMAP command: map created id {MapId} size {w},{h}", map.MapId, this.w, this.h);
             applicationMessagesService.SetResult(this, CommandResultEnum.Ok, CommandResultEnum.MapCreatedIdWH, map.MapId, this.w, this.h);
