@@ -43,7 +43,7 @@ public class CreateMapCommandService : ICommand
             var map = await mapService.CreateMap(scenario.PlayerId, this.w, this.h);
             if (map == null)
             {
-                applicationMessagesService.SetResult(this, CommandResultEnum.MapCreateError);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.MapCreateError);
                 this.loggerService.LogError("CREATEMAP command: error creating the map");
                 return returnValue;
             }
@@ -51,7 +51,7 @@ public class CreateMapCommandService : ICommand
             await scenario.SetActiveMap(map);
 
             this.loggerService.LogTrace("CREATEMAP command: map created id {MapId} size {w},{h}", map.MapId, this.w, this.h);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok, CommandResultEnum.MapCreatedIdWH, map.MapId, this.w, this.h);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.Ok, CommandResultEnum.MapCreatedIdWH, map.MapId, this.w, this.h);
 
             returnValue = true;
             return returnValue;

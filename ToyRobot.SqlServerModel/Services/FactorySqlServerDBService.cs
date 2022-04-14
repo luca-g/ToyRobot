@@ -116,22 +116,30 @@ public class FactorySqlServerDBService : IFactoryService
     }
     public async Task<IScenario> CreateScenario(Guid? playerId, int? mapId, int? robotId)
     {
-        if(await CreateOrLoadPlayer(playerId) is not DB.Player player)
+        try
         {
-            throw new Exception("player is null");
-        }
+            if (await CreateOrLoadPlayer(playerId) is not DB.Player player)
+            {
+                throw new Exception("player is null");
+            }
 
-        if (await CreateOrLoadMap(player.PlayerId, mapId) is not DB.Map map)
+            if (await CreateOrLoadMap(player.PlayerId, mapId) is not DB.Map map)
+            {
+                throw new Exception("map is null");
+            }
+
+            if (await CreateOrLoadRobot(player.PlayerId, map.MapId, robotId) is not DB.Robot robot)
+            {
+                throw new Exception("robot is null");
+            }
+
+            var scenario = new ScenarioSqlServerDB(player, map, robot);
+            return scenario;
+        }
+        catch (Exception ex)
         {
-            throw new Exception("map is null");
+            logger.LogError(ex, "Error creating the scenario parameters {playerId} {mapId} {robotId}", playerId, mapId, robotId);
+            throw;
         }
-
-        if (await CreateOrLoadRobot(player.PlayerId, map.MapId, robotId) is not DB.Robot robot)
-        {
-            throw new Exception("robot is null");
-        }
-
-        var scenario = new ScenarioSqlServerDB(player, map, robot);
-        return scenario;
     }
 }

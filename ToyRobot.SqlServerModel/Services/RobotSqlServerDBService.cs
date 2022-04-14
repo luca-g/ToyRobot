@@ -21,8 +21,6 @@ public class RobotSqlServerDBService : IRobotService, IRobotServiceDB
         this.toyRobotDbContext = toyRobotDbContext;
     }
 
-    public IRobot? ActiveRobot { get; set; }
-
     public async Task<IRobot> CreateRobot(int playerId, int mapId)
     {
         Debug.Assert(playerId > 0);

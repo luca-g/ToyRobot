@@ -3,6 +3,7 @@ namespace ToyRobot.Common.Model
 {
     public interface IScenario
     {
+        string Language => "en";
         bool IsMapSet { get; }
         bool IsRobotDeployed { get; }
         bool IsRobotSet { get; }

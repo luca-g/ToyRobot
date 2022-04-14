@@ -27,13 +27,13 @@ public class LeftCommandService : ICommand
         {
             if (!scenario.IsRobotSet)
             {
-                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveRobotNull);
                 this.loggerService.LogTrace("LEFT command: active robot is null");
                 return false;
             }
             if (!scenario.IsRobotDeployed)
             {
-                applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.RobotPositionNull);
                 this.loggerService.LogTrace("LEFT command: The robot is not in the map");
                 return false;
             }
@@ -44,7 +44,7 @@ public class LeftCommandService : ICommand
             }
             await scenario.SetMapPosition(newPosition);
             this.loggerService.LogTrace("LEFT command: robot moved to position {Orientation}", newPosition.Orientation);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.Ok);
             return true;
         }
         catch (Exception ex)

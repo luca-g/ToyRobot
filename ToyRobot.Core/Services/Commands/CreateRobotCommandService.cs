@@ -31,26 +31,26 @@ public class CreateRobotCommandService : ICommand
         {
             if(!scenario.IsMapSet ||  scenario.MapId == null)
             {
-                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveMapNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveMapNull);
                 return false;
             }
             var robot = await robotService.CreateRobot(scenario.PlayerId, scenario.MapId.Value);
             if (robot == null)
             {
                 this.loggerService.LogTrace("CREATEROBOT robot failed");
-                applicationMessagesService.SetResult(this, CommandResultEnum.CreateRobotFailed);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.CreateRobotFailed);
                 return false;
             }
             await scenario.SetActiveRobot(robot);
             this.loggerService.LogTrace("CREATEROBOT command: player {PlayerId}, map {MapId} robot created {RobotId}", 
                 scenario.PlayerId, scenario.MapId, scenario.RobotId);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok, CommandResultEnum.RobotCreatedId, scenario.RobotId);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.Ok, CommandResultEnum.RobotCreatedId, scenario.RobotId);
             return true;
         }
         catch (Exception ex)
         {
             this.loggerService.LogError(ex, "CREATEROBOT Command unexpected error");
-            applicationMessagesService.SetResult(this, CommandResultEnum.UnexpectedError);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.UnexpectedError);
             return false;
         }
     }

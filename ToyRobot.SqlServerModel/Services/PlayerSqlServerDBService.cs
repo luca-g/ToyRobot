@@ -8,8 +8,6 @@ namespace ToyRobot.SqlServerModel.Services;
 
 public class PlayerSqlServerDBService : IPlayerService
 {
-    public IPlayer? ActivePlayer { get; set; }
-
     private readonly ToyRobotDbContext _toyRobotDbContext;
     private readonly ILogger<PlayerSqlServerDBService> _logger;
 
@@ -31,9 +29,8 @@ public class PlayerSqlServerDBService : IPlayerService
             };
             _toyRobotDbContext.Player.Add(player);
             await _toyRobotDbContext.SaveChangesAsync();            
-            this.ActivePlayer = player;
-            _logger.LogTrace("CreatePlayer: player created - player {PlayerId}", this.ActivePlayer.PlayerId);
-            return this.ActivePlayer;
+            _logger.LogTrace("CreatePlayer: player created - player {PlayerId}", player.PlayerId);
+            return player;
         }
         catch (Exception ex)
         {
@@ -49,10 +46,9 @@ public class PlayerSqlServerDBService : IPlayerService
             var player = await _toyRobotDbContext.Player.SingleOrDefaultAsync(t=>t.Identifier == guid);
             if (player == null)
             {
-                throw new Exception($"Player not found {guid}");
+                throw new KeyNotFoundException($"Player not found {guid}");
             }
             _logger.LogTrace("Loaded player {guid}",guid);
-            this.ActivePlayer = player;
             return player;
         }
         catch (Exception ex)

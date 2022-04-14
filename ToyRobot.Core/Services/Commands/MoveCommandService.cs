@@ -29,13 +29,13 @@ public class MoveCommandService : ICommand
             if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("MOVE command: active robot is null");
-                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveRobotNull);
                 return false;
             }
             if (!scenario.IsRobotDeployed)
             {
                 this.loggerService.LogTrace("MOVE command: The robot is not in the map");
-                applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.RobotPositionNull);
                 return false;
             }
             var newPosition = scenario.RobotPosition?.Move();
@@ -46,12 +46,12 @@ public class MoveCommandService : ICommand
             if (!scenario.IsInMap(newPoint))
             {
                 this.loggerService.LogTrace("MOVE command: The robot cannot move outside the map");
-                applicationMessagesService.SetResult(this, CommandResultEnum.RobotCannotMoveOutsideMap);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.RobotCannotMoveOutsideMap);
                 return true;
             }
             await scenario.SetMapPosition(newPosition);
             this.loggerService.LogTrace("MOVE command: robot moved to position {X},{Y}", scenario.RobotPosition?.X, scenario.RobotPosition?.Y);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.Ok);
             return true;
         }
         catch (Exception ex)

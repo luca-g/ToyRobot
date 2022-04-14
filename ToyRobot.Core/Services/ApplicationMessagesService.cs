@@ -11,16 +11,13 @@ public class ApplicationMessagesService : IApplicationMessagesService
     const string DefaultLanguage = "en";
     private readonly ILogger<ApplicationMessagesService> loggerService;
     private readonly IConfiguration configuration;
-    private readonly IPlayerService playerService;
     public ApplicationMessagesService(
         ILogger<ApplicationMessagesService> logger,
-        IConfiguration configuration,
-        IPlayerService playerService
+        IConfiguration configuration
         )
     {
         this.loggerService = logger;
         this.configuration = configuration;
-        this.playerService = playerService;
     }
     public IConfiguration LoadCommandResult(string language)
     {
@@ -54,24 +51,15 @@ public class ApplicationMessagesService : IApplicationMessagesService
         return text;
     }
 
-    public IConfiguration LoadCommandResult()
-    {
-        return LoadCommandResult(playerService.Language);
-    }
-
-    public string Text(CommandResultEnum commandResultEnum, params object?[] values)
-    {
-        return Text(playerService.Language, commandResultEnum, values);
-    }
-    public void SetResult(ICommand command, CommandResultEnum commandResultEnum, params object?[] values)
+    public void SetResult(string language, ICommand command, CommandResultEnum commandResultEnum, params object?[] values)
     {
         command.CommandResult = commandResultEnum;
-        command.ExecuteResultText = this.Text(commandResultEnum, values);
+        command.ExecuteResultText = this.Text(language, commandResultEnum, values);
     }
 
-    public void SetResult(ICommand command, CommandResultEnum commandResultEnum, CommandResultEnum showText, params object?[] values)
+    public void SetResult(string language, ICommand command, CommandResultEnum commandResultEnum, CommandResultEnum showText, params object?[] values)
     {
         command.CommandResult = commandResultEnum;
-        command.ExecuteResultText = this.Text(showText, values);
+        command.ExecuteResultText = this.Text(language, showText, values);
     }
 }

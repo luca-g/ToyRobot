@@ -25,7 +25,7 @@ class Program
                  .ConfigureServices((hostContext, services) =>
                  {                     
                      services.AddCommandServicesAndConfig(hostContext.Configuration);
-                     services.AddToyRobotSqlServerServices(hostContext);
+                     services.AddToyRobotSqlServerServices(hostContext.Configuration);
                      services.AddHostedService<ConsoleService>();
                      services.AddLogging(loggingBuilder =>
                      {

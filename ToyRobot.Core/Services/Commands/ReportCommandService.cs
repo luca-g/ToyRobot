@@ -26,12 +26,12 @@ public class ReportCommandService : ICommand
             if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("REPORT command: active robot is null");
-                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveRobotNull);
                 return Task.FromResult(false);
             }
             if (!scenario.IsRobotDeployed)
             {
-                applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.RobotPositionNull);
                 this.loggerService.LogTrace("REPORT command result: {ExecuteResult}", this.ExecuteResultText);
             }
             else

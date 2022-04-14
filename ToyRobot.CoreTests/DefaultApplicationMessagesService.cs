@@ -28,7 +28,9 @@ internal class DefaultApplicationMessagesService : IApplicationMessagesService
             throw new NotImplementedException();
         }
     }
+#pragma warning disable CA1822 // Mark members as static
     public IConfiguration LoadCommandResult()
+#pragma warning restore CA1822 // Mark members as static
     {
         return new DefaultConfiguration();
     }
@@ -38,21 +40,16 @@ internal class DefaultApplicationMessagesService : IApplicationMessagesService
         return new DefaultConfiguration();
     }
 
-    public void SetResult(ICommand command, CommandResultEnum commandResultEnum, params object?[] values)
+    public void SetResult(string language, ICommand command, CommandResultEnum commandResultEnum, params object?[] values)
     {
         command.CommandResult = commandResultEnum;
         command.ExecuteResultText = commandResultEnum.ToString();
     }
 
-    public void SetResult(ICommand command, CommandResultEnum commandResultEnum, CommandResultEnum showText, params object?[] values)
+    public void SetResult(string language, ICommand command, CommandResultEnum commandResultEnum, CommandResultEnum showText, params object?[] values)
     {
         command.CommandResult = commandResultEnum;
         command.ExecuteResultText = showText.ToString();
-    }
-
-    public string Text(CommandResultEnum commandResultEnum, params object?[] values)
-    {
-        return commandResultEnum.ToString();
     }
 
     public string Text(string language, CommandResultEnum commandResultEnum, params object?[] values)

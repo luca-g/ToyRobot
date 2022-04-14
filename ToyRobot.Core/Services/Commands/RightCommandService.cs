@@ -28,19 +28,19 @@ public class RightCommandService : ICommand
             if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("RIGHT command: active robot is null");
-                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveRobotNull);
                 return false;
             }
             if (!scenario.IsRobotDeployed || scenario.RobotPosition==null)
             {
                 this.loggerService.LogTrace("RIGHT command: The robot is not in the map");
-                applicationMessagesService.SetResult(this, CommandResultEnum.RobotPositionNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.RobotPositionNull);
                 return false;
             }
             var newPosition = scenario.RobotPosition.Right();
             await scenario.SetMapPosition(newPosition);
             this.loggerService.LogTrace("RIGHT command: robot moved to position {Orientation}", newPosition.Orientation);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.Ok);
             return true;
         }
         catch (Exception ex)

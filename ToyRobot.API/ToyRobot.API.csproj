@@ -28,6 +28,14 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ToyRobot.Common\ToyRobot.Common.csproj" />
+    <ProjectReference Include="..\ToyRobot.Core\ToyRobot.Core.csproj" />
+    <ProjectReference Include="..\ToyRobot.SqlServerModel\ToyRobot.SqlServerModel.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>

@@ -37,19 +37,19 @@ public class PlaceCommandService : ICommand
             if (!scenario.IsRobotSet)
             {
                 this.loggerService.LogTrace("PLACE command: active robot is null");
-                applicationMessagesService.SetResult(this, CommandResultEnum.ActiveRobotNull);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveRobotNull);
                 return false;
             }
             var mapPositon = new MapPosition(x, y, mapOrientation);
             if (!scenario.IsInMap(mapPositon))
             {
                 this.loggerService.LogTrace("PLACE position set outside the map");
-                applicationMessagesService.SetResult(this, CommandResultEnum.RobotCannotMoveOutsideMap);
+                applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.RobotCannotMoveOutsideMap);
                 return false;
             }
             await scenario.SetMapPosition(mapPositon);
             this.loggerService.LogTrace("PLACE command: robot at position {x},{y}", x, y);
-            applicationMessagesService.SetResult(this, CommandResultEnum.Ok);
+            applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.Ok);
             return true;
         }
         catch (Exception ex)

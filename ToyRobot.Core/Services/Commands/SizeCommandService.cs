@@ -26,7 +26,7 @@ public class SizeCommandService : ICommand
         {
             if (!scenario.IsMapSet)
             {
-                this.applicationMessagesService.SetResult(this, CommandResultEnum.ActiveMapNull);
+                this.applicationMessagesService.SetResult(scenario.Language, this, CommandResultEnum.ActiveMapNull);
                 this.loggerService.LogTrace("SIZE command result: {result}", this.ExecuteResultText);
             }
             else
