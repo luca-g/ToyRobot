@@ -76,5 +76,6 @@
     <Build Include="dbo\Stored Procedures\LoadMaps.sql" />
     <Build Include="dbo\Stored Procedures\LoadRobots.sql" />
     <Build Include="dbo\Stored Procedures\DEV_ClearDatabase.sql" />
+    <Build Include="log\Tables\Command.sql" />
   </ItemGroup>
 </Project>
