@@ -114,11 +114,11 @@ public class FactorySqlServerDBService : IFactoryService
             throw;
         }
     }
-    public async Task<IScenario> CreateScenario(Guid? playerId, int? mapId, int? robotId)
+    public async Task<IScenario> CreateScenario(Guid? playerGuid, int? mapId, int? robotId)
     {
         try
         {
-            if (await CreateOrLoadPlayer(playerId) is not DB.Player player)
+            if (await CreateOrLoadPlayer(playerGuid) is not DB.Player player)
             {
                 throw new Exception("player is null");
             }
@@ -138,7 +138,7 @@ public class FactorySqlServerDBService : IFactoryService
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error creating the scenario parameters {playerId} {mapId} {robotId}", playerId, mapId, robotId);
+            logger.LogError(ex, "Error creating the scenario parameters {playerId} {mapId} {robotId}", playerGuid, mapId, robotId);
             throw;
         }
     }

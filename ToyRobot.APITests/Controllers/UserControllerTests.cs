@@ -1,10 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using ToyRobot.API.Controllers;
+using Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using ToyRobot.API.Controllers;
 using ToyRobot.API.Model;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
@@ -22,17 +23,21 @@ public class UserControllerTests
         playerService.Setup(t => t.LoadPlayer(It.IsAny<System.Guid>()))
             .ReturnsAsync(player.Object);
 
-        var controller = new UserController(playerService.Object);
+        Mock<IJwtService> jwtService = new();
+        jwtService.Setup(t => t.CreateToken(It.IsAny<IDictionary<string, object>>()))
+            .Returns("jwtToken");
+
+        var controller = new UserController(playerService.Object, jwtService.Object);
         var model = new LoginModel();
         var result = await controller.Login(model);
-        if(result is not OkObjectResult okResult)
+        if (result is not OkObjectResult okResult)
         {
             Assert.Fail();
             return;
         }
         Assert.IsTrue(okResult.StatusCode == 200);
         Assert.IsNotNull(okResult.Value);
-        Assert.IsInstanceOfType(okResult.Value, typeof(IPlayer));
+        Assert.IsInstanceOfType(okResult.Value, typeof(string));
     }
 
     [TestMethod()]
@@ -43,7 +48,9 @@ public class UserControllerTests
         playerService.Setup(t => t.LoadPlayer(It.IsAny<System.Guid>()))
             .ThrowsAsync(new KeyNotFoundException());
 
-        var controller = new UserController(playerService.Object);
+        Mock<IJwtService> jwtService = new();
+
+        var controller = new UserController(playerService.Object, jwtService.Object);
         var model = new LoginModel();
         var result = await controller.Login(model);
         if (result is not NotFoundResult notFoundResult)
@@ -61,7 +68,11 @@ public class UserControllerTests
         playerService.Setup(t => t.CreatePlayer())
             .ReturnsAsync(player.Object);
 
-        var controller = new UserController(playerService.Object);
+        Mock<IJwtService> jwtService = new();
+        jwtService.Setup(t => t.CreateToken(It.IsAny<IDictionary<string, object>>()))
+            .Returns("jwtToken");
+
+        var controller = new UserController(playerService.Object, jwtService.Object);
         var model = new LoginModel();
         var result = await controller.Create();
         if (result is not OkObjectResult okResult)
@@ -71,7 +82,7 @@ public class UserControllerTests
         }
         Assert.IsTrue(okResult.StatusCode == 200);
         Assert.IsNotNull(okResult.Value);
-        Assert.IsInstanceOfType(okResult.Value, typeof(IPlayer));
+        Assert.IsInstanceOfType(okResult.Value, typeof(string));
     }
     [TestMethod()]
     public async Task CreateTest_Failed()
@@ -81,7 +92,9 @@ public class UserControllerTests
         playerService.Setup(t => t.CreatePlayer())
             .ThrowsAsync(new System.Exception());
 
-        var controller = new UserController(playerService.Object);
+        Mock<IJwtService> jwtService = new();
+
+        var controller = new UserController(playerService.Object, jwtService.Object);
         var result = await controller.Create();
         if (result is not StatusCodeResult callResult)
         {

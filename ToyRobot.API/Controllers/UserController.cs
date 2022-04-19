@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ToyRobot.API.Model;
 using ToyRobot.Common.Services;
@@ -10,9 +11,11 @@ namespace ToyRobot.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IPlayerService playerService;
-        public UserController(IPlayerService playerService)
+        private readonly IJwtService jwtService;
+        public UserController(IPlayerService playerService, IJwtService jwtService)
         {
             this.playerService = playerService;
+            this.jwtService = jwtService;
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginModel loginModel)
@@ -20,7 +23,11 @@ namespace ToyRobot.API.Controllers
             try
             {
                 var player = await this.playerService.LoadPlayer(loginModel.UserGuid);
-                return Ok(player);
+                var token = jwtService.CreateToken(new Dictionary<string, object>
+                {
+                    { "userGuid", player.PlayerGuid }
+                });
+                return Ok(token);
             }
             catch (KeyNotFoundException)
             {
@@ -37,7 +44,11 @@ namespace ToyRobot.API.Controllers
             try
             {
                 var player = await this.playerService.CreatePlayer();
-                return Ok(player);
+                var token = jwtService.CreateToken(new Dictionary<string, object>
+                {
+                    { "userGuid", player.PlayerGuid }
+                });
+                return Ok(token);
             }
             catch (Exception)
             {

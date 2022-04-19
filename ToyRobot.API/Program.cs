@@ -17,19 +17,22 @@ class Program
             builder.WebHost
                 .ConfigureAppConfiguration((configApp) =>
                 {
-                    configApp.SetBasePath(System.IO.Directory.GetCurrentDirectory());
+                    string path = System.IO.Directory.GetCurrentDirectory();
+                    logger.Log(NLog.LogLevel.Info, "Api directory " + path);
+                    configApp.SetBasePath(path);
                     configApp.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddCommandServicesAndConfig(hostContext.Configuration);
-                    services.AddToyRobotSqlServerServices(hostContext.Configuration);
                     services.AddLogging(loggingBuilder =>
                     {
                         loggingBuilder.ClearProviders();
                         loggingBuilder.AddConfiguration(hostContext.Configuration.GetSection("Logging"));
                         loggingBuilder.AddNLog();
                     });
+                    services.AddJwtTokenAuthentication(hostContext.Configuration);
+                    services.AddCommandServicesAndConfig(hostContext.Configuration);
+                    services.AddToyRobotSqlServerServices(hostContext.Configuration);
                 });
 
             builder.Services.AddControllers();
