@@ -1,10 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Authentication;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Moq;
 using ToyRobot.Core.Tests;
@@ -15,7 +11,7 @@ namespace Authentication.Tests
     public class JwtServiceTests
     {
         const string Secret = "secret";
-        private (string, Guid) CreateToken()
+        private static (string, Guid) CreateToken(bool addClaims = true)
         {
             var userGuid = Guid.NewGuid();
             var settings = new JwtSettings
@@ -34,14 +30,22 @@ namespace Authentication.Tests
                 options.Object,
                 mock.Logger.Object);
 
-            var claims = new Dictionary<string, object>
+            string token;
+            if (addClaims)
             {
-                { "userGuid", userGuid }
-            };
-            var token = jwtService.CreateToken(claims);
+                var claims = new Dictionary<string, object>
+                {
+                    { "userGuid", userGuid }
+                };
+                token = jwtService.CreateToken(claims);
+            }
+            else
+            {
+                token = jwtService.CreateToken();
+            }
             return (token, userGuid);
         }
-        private IDictionary<string, object> DecodeToken(string token)
+        private static IDictionary<string, object> DecodeToken(string token)
         {
             var settings = new JwtSettings
             {
@@ -65,10 +69,17 @@ namespace Authentication.Tests
         [TestMethod()]
         public void CreateTokenTest()
         {
-            var (token, guid) = CreateToken();
+            var (token, _) = CreateToken();
             Assert.IsNotNull(token);
+            Assert.IsTrue(token.Length > 0);
         }
-
+        [TestMethod()]
+        public void CreateTokenTest_NoClaims()
+        {
+            var (token, _) = CreateToken(false);
+            Assert.IsNotNull(token);
+            Assert.IsTrue(token.Length > 0);
+        }
         [TestMethod()]
         public void DecodeTest()
         {
@@ -77,6 +88,16 @@ namespace Authentication.Tests
             Assert.IsNotNull(claims);
             Assert.IsNotNull(claims["userGuid"]);
             Assert.AreEqual(claims["userGuid"], guid.ToString());
+        }
+        [TestMethod()]
+        public void DecodeTest_NoClaims()
+        {
+            var (token, _) = CreateToken(false);
+            Assert.IsNotNull(token);
+            Assert.IsTrue(token.Length > 0);
+            var claims = DecodeToken(token);
+            Assert.IsNotNull(claims);
+            Assert.IsTrue(claims.Count == 0);
         }
     }
 }

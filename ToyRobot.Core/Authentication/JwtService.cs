@@ -50,7 +50,7 @@ public class JwtService : IJwtService
                 if (values != null)
                 {
                     var stValues = JsonConvert.SerializeObject(values);
-                    this.logger.LogTrace("Decoded claims {values}", values);
+                    this.logger.LogTrace("Decoded claims {values}", stValues);
                 }
                 else
                 {
@@ -60,20 +60,46 @@ public class JwtService : IJwtService
         }
         return values;
     }
-
+    public string CreateToken()
+    {
+        return CreateToken(new Dictionary<string, object>());
+    }
     public string CreateToken(IDictionary<string,object> claims)
     {
-        var builder = JwtBuilder.Create()
-            .WithAlgorithm(new HMACSHA256Algorithm())
-            .WithSecret(this.jwtSettings.Secret);
-        if (this.jwtSettings.ExpirationMinutes.HasValue)
+        try
         {
-            builder.AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(this.jwtSettings.ExpirationMinutes.Value));
+            if (logger.IsEnabled(LogLevel.Trace))
+            {
+                if (claims.Count > 0)
+                {
+                    var stValues = JsonConvert.SerializeObject(claims);
+                    this.logger.LogTrace("CreateToken claims {values}", stValues);
+                }
+                else
+                {
+                    this.logger.LogTrace("CreateToken without claims");
+                }
+            }
+
+            var builder = JwtBuilder.Create()
+                .WithAlgorithm(new HMACSHA256Algorithm())
+                .WithSecret(this.jwtSettings.Secret);
+            if (this.jwtSettings.ExpirationMinutes.HasValue)
+            {
+                builder.AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(this.jwtSettings.ExpirationMinutes.Value));
+            }
+            foreach (var kv in claims)
+            {
+                builder.AddClaim(kv.Key, kv.Value);
+            }
+            var value = builder.Encode();
+            logger.LogTrace("Token created {value}", value);
+            return value;
         }
-        foreach(var kv in claims)
+        catch (Exception ex)
         {
-            builder.AddClaim(kv.Key, kv.Value);
+            this.logger.LogError(ex, "Error creating token");
+            throw;
         }
-        return builder.Encode();
     }
 }
