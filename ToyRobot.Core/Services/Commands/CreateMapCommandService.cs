@@ -10,10 +10,6 @@ namespace ToyRobot.Core.Services.Commands;
 public class CreateMapCommandService : ICommand
 {
     public ICommandText CommandInstructions {get; private set;}
-    //public string FirstInstruction => "CREATEMAP";
-    //public string ConsoleInstruction { get => "CREATEMAP w,h"; }
-    //public IList<ICommandParameter>? CommandParameters { get; private set; }
-
     private readonly ILogger<CreateMapCommandService> loggerService;
     private string[]? commandParts = null;
     private readonly IRobotStepHistoryService robotStepHistoryService;

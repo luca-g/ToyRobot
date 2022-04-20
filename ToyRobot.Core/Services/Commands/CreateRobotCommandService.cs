@@ -8,8 +8,6 @@ namespace ToyRobot.Core.Services.Commands;
 public class CreateRobotCommandService : ICommand
 {
     public ICommandText CommandInstructions { get; private set; }
-
-    //public string FirstInstruction => "CREATEROBOT";
     private readonly ILogger<CreateRobotCommandService> loggerService;
     private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;

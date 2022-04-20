@@ -7,7 +7,6 @@ namespace ToyRobot.Core.Services.Commands;
 public class SizeCommandService : ICommand
 {
     public ICommandText CommandInstructions { get; private set; }
-    //public string FirstInstruction => "SIZE";
     private readonly ILogger<SizeCommandService> loggerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public string? ExecuteResultText { get; set; }

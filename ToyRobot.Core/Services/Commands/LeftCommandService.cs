@@ -7,8 +7,6 @@ namespace ToyRobot.Core.Services.Commands;
 public class LeftCommandService : ICommand
 {
     public ICommandText CommandInstructions { get; private set; }
-    //public string FirstInstruction => "LEFT";
-
     public string? ExecuteResultText {get; set;}
     public CommandResultEnum CommandResult {get; set;}
 

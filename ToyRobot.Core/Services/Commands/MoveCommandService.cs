@@ -9,7 +9,6 @@ namespace ToyRobot.Core.Services.Commands;
 public class MoveCommandService : ICommand
 {
     public ICommandText CommandInstructions { get; private set; }
-    //public string FirstInstruction => "MOVE";
     private readonly ILogger<MoveCommandService> loggerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public CommandResultEnum CommandResult { get; set; }

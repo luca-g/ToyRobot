@@ -7,7 +7,6 @@ namespace ToyRobot.Core.Services.Commands;
 public class ReportCommandService : ICommand
 {
     public ICommandText CommandInstructions { get; private set; }
-    //public string FirstInstruction => "REPORT";
     private readonly ILogger<ReportCommandService> loggerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public string? ExecuteResultText { get; set; }
