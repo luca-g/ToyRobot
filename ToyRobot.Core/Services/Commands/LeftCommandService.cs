@@ -6,7 +6,8 @@ namespace ToyRobot.Core.Services.Commands;
 
 public class LeftCommandService : ICommand
 {
-    public string FirstInstruction => "LEFT";
+    public ICommandText CommandInstructions { get; private set; }
+    //public string FirstInstruction => "LEFT";
 
     public string? ExecuteResultText {get; set;}
     public CommandResultEnum CommandResult {get; set;}
@@ -14,12 +15,17 @@ public class LeftCommandService : ICommand
     private readonly ILogger<LeftCommandService> loggerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public LeftCommandService(
+        ICoreFactoryService coreFactoryService,
         ILogger<LeftCommandService> logger,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
         this.applicationMessagesService = applicationMessagesService;
+        this.CommandInstructions =
+            coreFactoryService.CreateCommandInstructionsBuilder()
+            .SetFirstInstruction("LEFT")
+            .Build();
     }
     public async Task<bool> Execute(IScenario scenario)
     {
@@ -58,7 +64,7 @@ public class LeftCommandService : ICommand
     {
         if (commandParts.Length != 1)
             return false;
-        return FirstInstruction.Equals(commandParts[0]);
+        return CommandInstructions.CommandName.Equals(commandParts[0]);
     }
 }
 

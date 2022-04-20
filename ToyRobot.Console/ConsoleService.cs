@@ -39,7 +39,7 @@ internal class ConsoleService : IHostedService
             Console.WriteLine("Valid commands:");
             foreach(var command in commandCenterService.Commands)
             {
-                Console.WriteLine(command.ConsoleInstruction);
+                Console.WriteLine(command.CommandInstructions.CommandHelp);
             }
             Console.WriteLine("");
 

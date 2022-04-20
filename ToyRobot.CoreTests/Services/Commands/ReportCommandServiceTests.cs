@@ -16,6 +16,7 @@ public class ReportCommandServiceTests
     {
         var mock = new MockServicesHelper<ReportCommandService>();
         var reportCommandService = new ReportCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -32,6 +33,7 @@ public class ReportCommandServiceTests
             .ActiveMapSetupProperty(1)
             .ActiveRobotSetupProperty(1);
         var reportCommandService = new ReportCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -50,6 +52,7 @@ public class ReportCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
         var reportCommandService = new ReportCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -71,6 +74,7 @@ public class ReportCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(null,null,null);
         var reportCommandService = new ReportCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 

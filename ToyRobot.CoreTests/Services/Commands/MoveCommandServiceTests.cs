@@ -16,6 +16,7 @@ public class MoveCommandServiceTests
     {
         var mock = new MockServicesHelper<MoveCommandService>();
         var moveCommandService = new MoveCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -33,6 +34,7 @@ public class MoveCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(1, 1, Common.Model.MapOrientationEnum.NORTH);
         var moveCommandService = new MoveCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -53,6 +55,7 @@ public class MoveCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
         var moveCommandService = new MoveCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -75,6 +78,7 @@ public class MoveCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(null,null,null);
         var moveCommandService = new MoveCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -97,6 +101,7 @@ public class MoveCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(1, 1, Common.Model.MapOrientationEnum.NORTH);
         var moveCommandService = new MoveCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 

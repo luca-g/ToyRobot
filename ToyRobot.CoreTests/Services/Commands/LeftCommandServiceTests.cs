@@ -16,6 +16,7 @@ public class LeftCommandServiceTests
     {
         var mock = new MockServicesHelper<LeftCommandService>();
         var leftCommandService = new LeftCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -33,6 +34,7 @@ public class LeftCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(1,1,Common.Model.MapOrientationEnum.NORTH);
         var leftCommandService = new LeftCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -53,6 +55,7 @@ public class LeftCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
         var leftCommandService = new LeftCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -75,6 +78,7 @@ public class LeftCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(null,null,null);
         var leftCommandService = new LeftCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 

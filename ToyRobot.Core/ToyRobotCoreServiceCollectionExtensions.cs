@@ -14,6 +14,7 @@ public static class ToyRobotCoreServiceCollectionExtensions
     {
 
         services.Configure<MapSettings>(config.GetSection(MapSettings.SectionName));
+        services.AddSingleton<ICoreFactoryService, CoreFactoryService>();
         services.AddSingleton<IApplicationMessagesService, ApplicationMessagesService>();
         services.AddTransient<ICommand, CreateMapCommandService>();
         services.AddTransient<ICommand, LeftCommandService>();

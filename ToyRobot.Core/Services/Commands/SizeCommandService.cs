@@ -6,19 +6,25 @@ namespace ToyRobot.Core.Services.Commands;
 
 public class SizeCommandService : ICommand
 {
-    public string FirstInstruction => "SIZE";
+    public ICommandText CommandInstructions { get; private set; }
+    //public string FirstInstruction => "SIZE";
     private readonly ILogger<SizeCommandService> loggerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public string? ExecuteResultText { get; set; }
     public CommandResultEnum CommandResult { get; set; }
 
     public SizeCommandService(
+        ICoreFactoryService coreFactoryService,
         ILogger<SizeCommandService> logger,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
         this.applicationMessagesService = applicationMessagesService;
+        this.CommandInstructions =
+            coreFactoryService.CreateCommandInstructionsBuilder()
+            .SetFirstInstruction("SIZE")
+            .Build();
     }
     public Task<bool> Execute(IScenario scenario)
     {
@@ -48,7 +54,7 @@ public class SizeCommandService : ICommand
     {
         if (commandParts.Length != 1)
             return false;
-        return FirstInstruction.Equals(commandParts[0]);
+        return CommandInstructions.CommandName.Equals(commandParts[0]);
     }
 }
 

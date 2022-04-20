@@ -16,6 +16,7 @@ public class RightCommandServiceTests
     {
         var mock = new MockServicesHelper<RightCommandService>();
         var rightCommandService = new RightCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -33,6 +34,7 @@ public class RightCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(1, 1, Common.Model.MapOrientationEnum.NORTH);
         var rightCommandService = new RightCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -53,6 +55,7 @@ public class RightCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
         var rightCommandService = new RightCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -75,6 +78,7 @@ public class RightCommandServiceTests
             .ActiveRobotSetupProperty(1)
             .SetActiveRobotPosition(null, null, null);
         var rightCommandService = new RightCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 

@@ -21,6 +21,7 @@ public class CreateMapCommandServiceTests
     {
         var mock = new MockServicesHelper<CreateMapCommandService>();
         var mapCommandService = new CreateMapCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
@@ -37,6 +38,7 @@ public class CreateMapCommandServiceTests
         var mock = new MockServicesHelper<CreateMapCommandService>();
         mock.CreateMapSetup();
         var mapCommandService = new CreateMapCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,
@@ -57,6 +59,7 @@ public class CreateMapCommandServiceTests
     {
         var mock = new MockServicesHelper<CreateMapCommandService>();
         var mapCommandService = new CreateMapCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.RobotStepHistoryService.Object,
             mock.MapService.Object,

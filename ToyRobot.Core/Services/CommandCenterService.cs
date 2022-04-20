@@ -19,7 +19,7 @@ public class CommandCenterService : ICommandCenterService
         IRobotStepHistoryService robotStepHistoryService
     )
     {
-        this.Commands = serviceProvider.GetServices<ICommand>().OrderBy(t=>t.ConsoleInstruction).ToList();
+        this.Commands = serviceProvider.GetServices<ICommand>().OrderBy(t=>t.CommandInstructions.CommandHelp).ToList();
         this.loggerService = logger;
         this.robotStepHistoryService = robotStepHistoryService;
     }

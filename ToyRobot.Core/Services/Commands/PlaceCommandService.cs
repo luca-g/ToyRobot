@@ -8,8 +8,10 @@ namespace ToyRobot.Core.Services.Commands;
 
 public class PlaceCommandService : ICommand
 {
-    public string FirstInstruction => "PLACE";
-    public string ConsoleInstruction { get => "PLACE x,y,direction (NORTH,EAST,SOUTH,WEST)"; }
+    public ICommandText CommandInstructions { get; private set; }
+    //public string FirstInstruction => "PLACE";
+    //public string ConsoleInstruction { get => "PLACE x,y,direction (NORTH,EAST,SOUTH,WEST)"; }
+    //public IList<ICommandParameter>? CommandParameters { get; private set; }
     public string? ExecuteResultText { get; set; }
     public CommandResultEnum CommandResult { get; set; }
 
@@ -22,11 +24,19 @@ public class PlaceCommandService : ICommand
     private MapOrientationEnum mapOrientation;
     
     public PlaceCommandService(
+        ICoreFactoryService coreFactoryService,
         ILogger<PlaceCommandService> logger, 
         IApplicationMessagesService applicationMessagesService)
     {
         this.loggerService = logger;
         this.applicationMessagesService = applicationMessagesService;
+        this.CommandInstructions =
+            coreFactoryService.CreateCommandInstructionsBuilder()
+            .SetFirstInstruction("PLACE")
+            .AddCommandParameter("x", typeof(int))
+            .AddCommandParameter("y", typeof(int))
+            .AddCommandParameter("direction", typeof(MapOrientationEnum))
+            .Build();
     }
     public async Task<bool> Execute(IScenario scenario)
     {
@@ -63,7 +73,7 @@ public class PlaceCommandService : ICommand
     {
         if (commandParts.Length != 4)
             return false;
-        if (FirstInstruction.Equals(commandParts[0]))
+        if (CommandInstructions.CommandName.Equals(commandParts[0]))
         {
             if (!int.TryParse(commandParts[1], out x))
             {

@@ -7,8 +7,9 @@ namespace ToyRobot.Core.Services.Commands;
 
 public class CreateRobotCommandService : ICommand
 {
-    public string FirstInstruction => "CREATEROBOT";
-    public string ConsoleInstruction { get => "CREATEROBOT"; }
+    public ICommandText CommandInstructions { get; private set; }
+
+    //public string FirstInstruction => "CREATEROBOT";
     private readonly ILogger<CreateRobotCommandService> loggerService;
     private readonly IRobotService robotService;
     private readonly IApplicationMessagesService applicationMessagesService;
@@ -16,6 +17,7 @@ public class CreateRobotCommandService : ICommand
     public string? ExecuteResultText { get; set; }
 
     public CreateRobotCommandService(
+        ICoreFactoryService coreFactoryService,
         ILogger<CreateRobotCommandService> logger,
         IRobotService robotService,
         IApplicationMessagesService applicationMessagesService
@@ -24,6 +26,10 @@ public class CreateRobotCommandService : ICommand
         this.loggerService = logger;
         this.robotService = robotService;
         this.applicationMessagesService = applicationMessagesService;
+        this.CommandInstructions =
+            coreFactoryService.CreateCommandInstructionsBuilder()
+            .SetFirstInstruction("CREATEROBOT")
+            .Build();
     }
     public async Task<bool> Execute(IScenario scenario)
     {
@@ -59,7 +65,7 @@ public class CreateRobotCommandService : ICommand
     {
         if (commandParts.Length != 1)
             return false;
-        if (FirstInstruction.Equals(commandParts[0]))
+        if (CommandInstructions.CommandName.Equals(commandParts[0]))
         {
             return true;
         }

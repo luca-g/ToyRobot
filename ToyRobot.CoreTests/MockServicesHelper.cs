@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
+using ToyRobot.Core.Services;
 
 namespace ToyRobot.Core.Tests;
 public class MockServicesHelper<T>
 {
+    public ICoreFactoryService CoreFactoryService = new CoreFactoryService();
     public Mock<IScenario> Scenario = new();
     public Mock<ILogger<T>> Logger = new();
     public Mock<IMapService> MapService = new();

@@ -16,6 +16,7 @@ public class SizeCommandServiceTests
     {
         var mock = new MockServicesHelper<SizeCommandService>();
         var sizeCommandService = new SizeCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -31,6 +32,7 @@ public class SizeCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
         var sizeCommandService = new SizeCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -50,6 +52,7 @@ public class SizeCommandServiceTests
         var mock = new MockServicesHelper<SizeCommandService>();
         mock.ActivePlayerSetupProperty(1);
         var sizeCommandService = new SizeCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 

@@ -28,7 +28,6 @@ public class MapPosition : IMapPosition, IMapPoint
             MapOrientationEnum.EAST => MapOrientationEnum.NORTH,
             MapOrientationEnum.SOUTH => MapOrientationEnum.EAST,
             MapOrientationEnum.WEST => MapOrientationEnum.SOUTH,
-            MapOrientationEnum.NOT_SET => throw new InvalidOperationException(),
             _ => throw new InvalidOperationException(),
         };
         return new MapPosition(this.X, this.Y, orientation);
@@ -42,7 +41,6 @@ public class MapPosition : IMapPosition, IMapPoint
             MapOrientationEnum.EAST => MapOrientationEnum.SOUTH,
             MapOrientationEnum.SOUTH => MapOrientationEnum.WEST,
             MapOrientationEnum.WEST => MapOrientationEnum.NORTH,
-            MapOrientationEnum.NOT_SET => throw new InvalidOperationException(),
             _ => throw new InvalidOperationException(),
         };
         return new MapPosition(this.X, this.Y, orientation);
@@ -56,7 +54,6 @@ public class MapPosition : IMapPosition, IMapPoint
             MapOrientationEnum.EAST => new MapPosition(this.X + 1, this.Y, this.Orientation),
             MapOrientationEnum.SOUTH => new MapPosition(this.X, this.Y - 1, this.Orientation),
             MapOrientationEnum.WEST => new MapPosition(this.X - 1, this.Y, this.Orientation),
-            MapOrientationEnum.NOT_SET => throw new InvalidOperationException(),
             _ => throw new InvalidOperationException(),
         };
     }

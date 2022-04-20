@@ -1,8 +1,7 @@
 ﻿namespace ToyRobot.Common.Model;
 
 public enum MapOrientationEnum { 
-    NOT_SET, 
-    NORTH, 
+    NORTH = 1, 
     SOUTH, 
     EAST, 
     WEST 

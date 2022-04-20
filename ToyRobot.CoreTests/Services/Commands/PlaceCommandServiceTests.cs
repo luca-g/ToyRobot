@@ -17,6 +17,7 @@ public class PlaceCommandServiceTests
     {
         var mock = new MockServicesHelper<PlaceCommandService>();
         var placeCommandService = new PlaceCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -33,6 +34,7 @@ public class PlaceCommandServiceTests
             .ActiveMapSetupProperty(1)
             .ActiveRobotSetupProperty(1);
         var placeCommandService = new PlaceCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -53,6 +55,7 @@ public class PlaceCommandServiceTests
         mock.ActivePlayerSetupProperty(1)
             .ActiveMapSetupProperty(1);
         var placeCommandService = new PlaceCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 
@@ -74,6 +77,7 @@ public class PlaceCommandServiceTests
             .ActiveMapSetupProperty(1, false)
             .ActiveRobotSetupProperty(1);
         var placeCommandService = new PlaceCommandService(
+            mock.CoreFactoryService,
             mock.Logger.Object,
             mock.ApplicationMessageService);
 

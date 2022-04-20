@@ -3,13 +3,17 @@ using System.Diagnostics;
 using ToyRobot.Common.Extensions;
 using ToyRobot.Common.Model;
 using ToyRobot.Common.Services;
+using ToyRobot.Core.Model;
 
 namespace ToyRobot.Core.Services.Commands;
 
 public class CreateMapCommandService : ICommand
 {
-    public string FirstInstruction => "CREATEMAP";
-    public string ConsoleInstruction { get => "CREATEMAP w,h"; }
+    public ICommandText CommandInstructions {get; private set;}
+    //public string FirstInstruction => "CREATEMAP";
+    //public string ConsoleInstruction { get => "CREATEMAP w,h"; }
+    //public IList<ICommandParameter>? CommandParameters { get; private set; }
+
     private readonly ILogger<CreateMapCommandService> loggerService;
     private string[]? commandParts = null;
     private readonly IRobotStepHistoryService robotStepHistoryService;
@@ -21,6 +25,7 @@ public class CreateMapCommandService : ICommand
     private int w;
     private int h;
     public CreateMapCommandService(
+        ICoreFactoryService coreFactoryService,
         ILogger<CreateMapCommandService> logger, 
         IRobotStepHistoryService robotStepHistoryService, 
         IMapService mapService,
@@ -31,6 +36,12 @@ public class CreateMapCommandService : ICommand
         this.robotStepHistoryService = robotStepHistoryService;
         this.mapService = mapService;
         this.applicationMessagesService = applicationMessagesService;
+        this.CommandInstructions =
+            coreFactoryService.CreateCommandInstructionsBuilder()
+            .SetFirstInstruction("CREATEMAP")
+            .AddCommandParameter("width", typeof(int))
+            .AddCommandParameter("height", typeof(int))
+            .Build();
     }
     public async Task<bool> Execute(IScenario scenario)
     {
@@ -73,7 +84,7 @@ public class CreateMapCommandService : ICommand
     {
         if (commandParts.Length != 3)
             return false;
-        if (FirstInstruction.Equals(commandParts[0]))
+        if (CommandInstructions.CommandName.Equals(commandParts[0]))
         {
             if (!int.TryParse(commandParts[1], out this.w))
             {

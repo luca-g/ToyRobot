@@ -31,7 +31,7 @@ namespace ToyRobot.SqlServerModel.Services
                 {
                     var positionAfterCommand = scenario.RobotPosition;
                     int? orientationId = null;
-                    if (positionAfterCommand!=null && positionAfterCommand.Orientation!=MapOrientationEnum.NOT_SET)
+                    if (positionAfterCommand!=null)
                     {
                         orientationId = (int)positionAfterCommand.Orientation;
                     }

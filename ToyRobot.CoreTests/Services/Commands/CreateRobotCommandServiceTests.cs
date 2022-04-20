@@ -16,6 +16,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
         {
             var mock = new MockServicesHelper<CreateRobotCommandService>();
             var createRobotCommand = new CreateRobotCommandService(
+                mock.CoreFactoryService,
                 mock.Logger.Object,
                 mock.RobotService.Object,
                 mock.ApplicationMessageService);
@@ -34,6 +35,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 .ActiveRobotSetupProperty(null)
                 .CreateRobotSetup();
             var createRobotCommand = new CreateRobotCommandService(
+                mock.CoreFactoryService,
                 mock.Logger.Object,
                 mock.RobotService.Object,
                 mock.ApplicationMessageService);
@@ -55,6 +57,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
             mock.ActivePlayerSetupProperty(1)
                 .CreateRobotSetup();
             var createRobotCommand = new CreateRobotCommandService(
+                mock.CoreFactoryService,
                 mock.Logger.Object,
                 mock.RobotService.Object,
                 mock.ApplicationMessageService);
@@ -76,6 +79,7 @@ namespace ToyRobot.Core.Services.Commands.Tests
                 .ActivePlayerSetupProperty(1)
                 .ActiveRobotSetupProperty(null);
             var createRobotCommand = new CreateRobotCommandService(
+                mock.CoreFactoryService,
                 mock.Logger.Object,
                 mock.RobotService.Object,
                 mock.ApplicationMessageService);

@@ -8,19 +8,25 @@ namespace ToyRobot.Core.Services.Commands;
 
 public class MoveCommandService : ICommand
 {
-    public string FirstInstruction => "MOVE";
+    public ICommandText CommandInstructions { get; private set; }
+    //public string FirstInstruction => "MOVE";
     private readonly ILogger<MoveCommandService> loggerService;
     private readonly IApplicationMessagesService applicationMessagesService;
     public CommandResultEnum CommandResult { get; set; }
     public string? ExecuteResultText { get; set; }
 
     public MoveCommandService(
+        ICoreFactoryService coreFactoryService,
         ILogger<MoveCommandService> logger,
         IApplicationMessagesService applicationMessagesService
         )
     {
         this.loggerService = logger;
         this.applicationMessagesService = applicationMessagesService;
+        this.CommandInstructions =
+            coreFactoryService.CreateCommandInstructionsBuilder()
+            .SetFirstInstruction("MOVE")
+            .Build();
     }
     public async Task<bool> Execute(IScenario scenario)
     {
@@ -65,6 +71,6 @@ public class MoveCommandService : ICommand
     {
         if (commandParts.Length != 1)
             return false;
-        return FirstInstruction.Equals(commandParts[0]);
+        return CommandInstructions.CommandName.Equals(commandParts[0]);
     }
 }
