@@ -11,16 +11,19 @@ public class FactorySqlServerDBService : IFactoryService
     private readonly IPlayerService playerService;
     private readonly IMapService mapService;
     private readonly IRobotService robotService;
+    private readonly IRobotServiceDB robotServiceDB;
     public FactorySqlServerDBService(
         ILogger<FactorySqlServerDBService> logger, 
         IPlayerService playerService, 
         IMapService mapService, 
-        IRobotService robotService)
+        IRobotService robotService,
+        IRobotServiceDB robotServiceDB)
     {
         this.logger = logger;
         this.playerService = playerService;
         this.mapService = mapService;
         this.robotService = robotService;
+        this.robotServiceDB = robotServiceDB;
     }
     public async Task<IScenario> CreateScenario()
     {
@@ -133,7 +136,7 @@ public class FactorySqlServerDBService : IFactoryService
                 throw new Exception("robot is null");
             }
 
-            var scenario = new ScenarioSqlServerDB(player, map, robot);
+            var scenario = new ScenarioSqlServerDB(robotServiceDB, player, map, robot);
             return scenario;
         }
         catch (Exception ex)

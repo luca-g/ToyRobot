@@ -22,7 +22,6 @@ public class MapSqlServerDBService : IMapService
         this.MapSettings = mapSettings.Value;
     }
     public MapSettings MapSettings { get; private set; }
-    public IMap? ActiveMap { get; set; }
 
     public async Task<IList<IMap>> LoadMaps(int playerId)
     {
@@ -53,7 +52,7 @@ public class MapSqlServerDBService : IMapService
     {
         try
         {
-            loggerService.LogTrace("CreateMap looking for existing map of same size - player {playerId}", playerId);
+            loggerService.LogTrace("CreateMap player {playerId}", playerId);
             var map = new Map
             {
                 Width = width,
@@ -63,7 +62,6 @@ public class MapSqlServerDBService : IMapService
             toyRobotDbContext.Map.Add(map);
             await toyRobotDbContext.SaveChangesAsync();
             Debug.Assert(map.MapId > 0);
-            this.ActiveMap = map;
             loggerService.LogTrace("CreateMap: map created - player {playerId}, map {MapId}", playerId, map.MapId);
             return map;
         }

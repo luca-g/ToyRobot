@@ -7,10 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Language\ApplicationMessages.en.json" />
     <Content Remove="NLog.config" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Language\ApplicationMessages.en.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

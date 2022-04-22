@@ -1,0 +1,15 @@
+{
+  "CommandResult.en": {
+    "NotSet": "Not set",
+    "Ok": "Ok",
+    "UnexpectedError": "Unexpected Error",
+    "ActiveMapNull": "There is no active map",
+    "ActiveRobotNull": "The map contains no robots",
+    "MapCreateError": "Error creating the map",
+    "MapCreatedIdWH": "Map created Id {0}, width {1} height {2}",
+    "RobotCreateFailed": "Error creating the robot",
+    "RobotCreatedId": "Robot created id {0}",
+    "RobotPositionNull": "The robot is outside the map",
+    "RobotCannotMoveOutsideMap": "The robot cannot move outside the map"
+  }
+}

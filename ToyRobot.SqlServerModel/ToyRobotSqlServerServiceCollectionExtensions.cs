@@ -15,7 +15,11 @@ public static class ToyRobotSqlServerServicesCollectionExtensions
         services.AddScoped<IFactoryService, FactorySqlServerDBService>();
         services.AddScoped<IMapService, MapSqlServerDBService>();
         services.AddScoped<IPlayerService, PlayerSqlServerDBService>();
-        services.AddScoped<IRobotService, RobotSqlServerDBService>();
+
+        services.AddScoped<RobotSqlServerDBService>();
+        services.AddScoped<IRobotServiceDB>(services => services.GetRequiredService<RobotSqlServerDBService>());
+        services.AddScoped<IRobotService>(services => services.GetRequiredService<RobotSqlServerDBService>());
+
         services.AddScoped<IRobotStepHistoryService, RobotStepSqlServerDBService>();
         services.AddDbContext<ToyRobotDbContext>(options =>
         {

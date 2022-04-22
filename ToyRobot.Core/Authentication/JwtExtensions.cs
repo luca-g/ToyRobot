@@ -37,6 +37,7 @@ public static class JwtExtensions
                 ValidateAudience = true,
                 ValidIssuer = settings.Issuer,
                 ValidAudience = settings.Audience,
+                RequireExpirationTime = false
             };
         });
 

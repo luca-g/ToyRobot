@@ -1,6 +1,7 @@
 ﻿using JWT.Algorithms;
 using JWT.Builder;
 using JWT.Exceptions;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -83,7 +84,9 @@ public class JwtService : IJwtService
 
             var builder = JwtBuilder.Create()
                 .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(this.jwtSettings.Secret);
+                .WithSecret(this.jwtSettings.Secret)
+                .Issuer(this.jwtSettings.Issuer)
+                .Audience(this.jwtSettings.Audience);
             if (this.jwtSettings.ExpirationMinutes.HasValue)
             {
                 builder.AddClaim("exp", DateTimeOffset.UtcNow.AddMinutes(this.jwtSettings.ExpirationMinutes.Value));

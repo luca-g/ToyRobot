@@ -97,7 +97,7 @@ namespace Authentication.Tests
             Assert.IsTrue(token.Length > 0);
             var claims = DecodeToken(token);
             Assert.IsNotNull(claims);
-            Assert.IsTrue(claims.Count == 0);
+            Assert.IsTrue(claims.Count == 2);
         }
     }
 }

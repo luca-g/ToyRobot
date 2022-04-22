@@ -7,18 +7,9 @@ namespace ToyRobot.SqlServerModel.Model;
 public class ScenarioSqlServerDB : Scenario, IScenario
 {
     private readonly IRobotServiceDB robotServiceDB;
-    public ScenarioSqlServerDB(IPlayer player, IMap? map, IRobot? robot) : base(player, map, robot)
+    public ScenarioSqlServerDB(IRobotServiceDB robotServiceDB, IPlayer player, IMap? map, IRobot? robot) : base(player, map, robot)
     {
-        var services = ToyRobotServices.Instance;
-        if (services == null)
-        {
-            throw new NullReferenceException("ToyRobotServices cannot be null");
-        }
-        if (services.GetService<IRobotService>() is not IRobotServiceDB robotService)
-        {
-            throw new NullReferenceException("IRobotServiceDB service cannot be null");
-        }
-        this.robotServiceDB = robotService;
+        this.robotServiceDB = robotServiceDB;
     }
     public new async Task<bool> SetMapPosition(IMapPosition? mapPosition)
     {

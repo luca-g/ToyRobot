@@ -7,15 +7,29 @@ internal class CommandParameter : ICommandParameter
     public string Name {get; set;}
 
     public Type ParameterType { get; set;}
-    public string Description()
-    {        
-        if(ParameterType.IsEnum)
+
+    public IList<string>? AcceptedValues
+    {
+        get
         {
-            var values = new List<string>();
-            foreach(var value in Enum.GetValues(ParameterType))
+            if (ParameterType.IsEnum)
             {
-                values.Add(value.ToString() ?? String.Empty);
+                var values = new List<string>();
+                foreach (var value in Enum.GetValues(ParameterType))
+                {
+                    values.Add(value.ToString() ?? String.Empty);
+                }
+                return values;
             }
+            return null;
+        }
+    }
+
+    public string Description()
+    {
+        var values = this.AcceptedValues;
+        if (values != null)
+        {
             var valuesDescription = String.Join(",", values);
             return $"{Name} ({valuesDescription})";
         }

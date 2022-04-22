@@ -2,7 +2,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using NLog.Extensions.Logging;
+using ToyRobot.Common.Services;
 
 namespace ToyRobot.API;
 class Program
@@ -21,6 +23,7 @@ class Program
                     logger.Log(NLog.LogLevel.Info, "Api directory " + path);
                     configApp.SetBasePath(path);
                     configApp.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                    configApp.AddJsonFile("Language/ApplicationMessages.en.json", optional: false, reloadOnChange: false);
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
@@ -38,8 +41,34 @@ class Program
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
+            builder.Services.AddSwaggerGen(option =>
+            {
+                option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "JWT Authorization header using the Bearer scheme. \r\n\r\n Enter 'Bearer' [space] and then your token in the text input below.\r\n\r\nExample: \"Bearer 1safsfsdfdfd\"",
+                });
+#pragma warning disable CA1825 // Avoid zero-length array allocations
+                option.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                   {
+                     new OpenApiSecurityScheme
+                     {
+                       Reference = new OpenApiReference
+                       {
+                         Type = ReferenceType.SecurityScheme,
+                         Id = "Bearer"
+                       }
+                      },
+                      new string[] { }
+                    }
+                  });
+#pragma warning restore CA1825 // Avoid zero-length array allocations
+            });
+        
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -51,10 +80,12 @@ class Program
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
 
+            ToyRobotServices.Instance.SetServiceProvider(app.Services);
             await app.RunAsync();
         }
         catch (Exception ex)
