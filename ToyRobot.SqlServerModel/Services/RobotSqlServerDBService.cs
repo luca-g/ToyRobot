@@ -60,7 +60,15 @@ public class RobotSqlServerDBService : IRobotService, IRobotServiceDB
                 return new List<IRobot>();
             }
             var result = robots
-                .Select(t => new Robot { PlayerId = t.PlayerId, MapId = t.MapId, X=t.X, Y=t.Y, OrientationId=t.OrientationId, CreationDate = t.CreationDate } as IRobot)
+                .Select(t => new Robot { 
+                    RobotId = t.RobotId,
+                    PlayerId = t.PlayerId, 
+                    MapId = t.MapId, 
+                    X=t.X, 
+                    Y=t.Y, 
+                    OrientationId=t.OrientationId, 
+                    CreationDate = t.CreationDate 
+                } as IRobot)
                 .ToList();
             loggerService.LogTrace("Loadied robots for player {playerId} and map {mapId}", playerId, mapId);
             return result;

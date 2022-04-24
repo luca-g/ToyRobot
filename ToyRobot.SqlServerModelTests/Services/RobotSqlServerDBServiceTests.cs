@@ -45,6 +45,7 @@ public class RobotSqlServerDBServiceTests : BaseServiceTest
         var robots = await robotSqlServerDBService.LoadRobots(player.PlayerId, map.MapId);
         Assert.IsNotNull(robots);
         Assert.IsTrue(robots.Count == 1);
+        Assert.IsTrue(robots[0].RobotId == robot.RobotId);
 
         var robotsAllMaps = await robotSqlServerDBService.LoadRobots(player.PlayerId, null);
         Assert.IsNotNull(robotsAllMaps);

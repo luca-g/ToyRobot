@@ -10,8 +10,10 @@ namespace Microsoft.Extensions.DependencyInjection;
 public static class ToyRobotSqlServerServicesCollectionExtensions
 {
     public static IServiceCollection AddToyRobotSqlServerServices(
-         this IServiceCollection services, IConfiguration config)
+         this IServiceCollection services, IConfiguration config, bool useTestDatabase=false)
     {
+        var connectionString = useTestDatabase ?
+            "ConnectionStrings:SqlServerTest" : "ConnectionStrings:SqlServer";
         services.AddScoped<IFactoryService, FactorySqlServerDBService>();
         services.AddScoped<IMapService, MapSqlServerDBService>();
         services.AddScoped<IPlayerService, PlayerSqlServerDBService>();
@@ -23,7 +25,7 @@ public static class ToyRobotSqlServerServicesCollectionExtensions
         services.AddScoped<IRobotStepHistoryService, RobotStepSqlServerDBService>();
         services.AddDbContext<ToyRobotDbContext>(options =>
         {
-            options.UseSqlServer(config.GetSection("ConnectionStrings:SqlServer").Value);
+            options.UseSqlServer(config.GetSection(connectionString).Value);
         }
         );
        

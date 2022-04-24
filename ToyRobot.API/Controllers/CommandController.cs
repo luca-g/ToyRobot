@@ -15,16 +15,36 @@ public class CommandController : ControllerBase
     private readonly ICommandCenterService commandCenterService;
     private readonly ILogger<CommandController> logger;
     private readonly IFactoryService factoryService;
+    private readonly IHttpContextAccessor httpContextAccessor;
     public CommandController(
         ILogger<CommandController> logger,
         ICommandCenterService commandCenterService,
-        IFactoryService factoryService)
+        IFactoryService factoryService,
+        IHttpContextAccessor httpContextAccessor)
     {
         this.logger = logger;
         this.commandCenterService = commandCenterService;
         this.factoryService = factoryService;
+        this.httpContextAccessor = httpContextAccessor;
     }
-    private Guid UserGuid { get { return Guid.Parse(HttpContext.User.Claims.First(t => t.Type == "userGuid").Value); } }
+    private Guid UserGuid { 
+        get { 
+            if(httpContextAccessor.HttpContext==null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            var guidString = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(t => t.Type == "userGuid")?.Value;
+            if(guidString == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+            if (!Guid.TryParse(guidString, out Guid guidValue))
+            {
+                throw new InvalidDataException("userGuid: invalid string");
+            }
+            return guidValue;
+        } 
+    }
 
     [HttpGet]
     public ActionResult<IEnumerable<ICommandText>> Get()
@@ -48,6 +68,7 @@ public class CommandController : ControllerBase
         {
             var userGuid = this.UserGuid;
             logger.LogTrace("Executing Command {userGuid},{MapId},{RobotId},{Text}", userGuid, commandModel.MapId, commandModel.RobotId, commandModel.Text);
+
             ExecuteCommandModel result = new();
 
             var scenario = await factoryService.CreateScenario(userGuid, commandModel.MapId, commandModel.RobotId);
@@ -71,30 +92,4 @@ public class CommandController : ControllerBase
             return new StatusCodeResult(StatusCodes.Status500InternalServerError);
         }
     }
-    /*
-    // GET api/<CommandController>/5
-    [HttpGet("{id}")]
-    public string Get(int id)
-    {
-        return "value";
-    }
-
-    // POST api/<CommandController>
-    [HttpPost]
-    public void Post([FromBody] string value)
-    {
-    }
-
-    // PUT api/<CommandController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
-    {
-    }
-
-    // DELETE api/<CommandController>/5
-    [HttpDelete("{id}")]
-    public void Delete(int id)
-    {
-    }
-*/
 }

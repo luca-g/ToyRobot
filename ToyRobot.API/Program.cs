@@ -33,6 +33,7 @@ class Program
                         loggingBuilder.AddConfiguration(hostContext.Configuration.GetSection("Logging"));
                         loggingBuilder.AddNLog();
                     });
+                    services.AddHttpContextAccessor();
                     services.AddJwtTokenAuthentication(hostContext.Configuration);
                     services.AddCommandServicesAndConfig(hostContext.Configuration);
                     services.AddToyRobotSqlServerServices(hostContext.Configuration);
