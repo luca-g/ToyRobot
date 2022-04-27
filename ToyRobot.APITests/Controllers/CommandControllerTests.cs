@@ -67,7 +67,7 @@ namespace ToyRobot.API.Controllers.Tests
                 Text = command_text
             };
             var result = await controller.Command(executeCommandModel);
-            if (result is not OkObjectResult okResult)
+            if (result.Result is not OkObjectResult okResult)
             {
                 Assert.Fail();
                 return;

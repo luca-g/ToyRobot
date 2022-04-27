@@ -45,7 +45,6 @@ public class CommandController : ControllerBase
             return guidValue;
         } 
     }
-
     [HttpGet]
     public ActionResult<IEnumerable<ICommandText>> Get()
     {
@@ -62,7 +61,7 @@ public class CommandController : ControllerBase
         }
     }
     [HttpPost]
-    public async Task<IActionResult> Command(ExecuteCommandModel commandModel)
+    public async Task<ActionResult<ExecuteCommandModel>> Command(ExecuteCommandModel commandModel)
     {
         try
         {

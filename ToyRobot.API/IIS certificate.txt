@@ -1,0 +1,11 @@
+﻿To create and install the localhost certificate, 
+customize $certKeyPath and execute in powershell:
+
+$certKeyPath = "e:\Certificates\localhost.pfx"
+$cert = New-SelfSignedCertificate -DnsName @("localhost") -CertStoreLocation "cert:\LocalMachine\My"
+$password = ConvertTo-SecureString 'secretPassword' -AsPlainText -Force
+$cert | Export-PfxCertificate -FilePath $certKeyPath -Password $password
+$rootCert = $(Import-PfxCertificate -FilePath $certKeyPath -CertStoreLocation 'Cert:\LocalMachine\Root' -Password $password)
+
+Add in IIS a localhost site and set the certificate to https, 
+press "add application" and select the api folder

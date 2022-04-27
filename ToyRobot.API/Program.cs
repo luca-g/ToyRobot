@@ -70,6 +70,21 @@ class Program
 #pragma warning restore CA1825 // Avoid zero-length array allocations
             });
         
+            if(builder.Environment.IsDevelopment())
+            {
+                builder.Services.AddCors(options =>
+                {
+                    options.AddDefaultPolicy(
+                        policy =>
+                        {
+                            policy.WithOrigins("http://localhost:8080");
+                            policy.AllowAnyMethod();
+                            policy.AllowAnyHeader();
+                            policy.AllowCredentials();
+                        });
+                });
+            }
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -77,6 +92,7 @@ class Program
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseCors();
             }
 
             app.UseHttpsRedirection();

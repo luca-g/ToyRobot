@@ -30,7 +30,7 @@ public class UserControllerTests
         var controller = new UserController(playerService.Object, jwtService.Object);
         var model = new LoginModel();
         var result = await controller.Login(model);
-        if (result is not OkObjectResult okResult)
+        if (result.Result is not OkObjectResult okResult)
         {
             Assert.Fail();
             return;
@@ -53,7 +53,7 @@ public class UserControllerTests
         var controller = new UserController(playerService.Object, jwtService.Object);
         var model = new LoginModel();
         var result = await controller.Login(model);
-        if (result is not NotFoundResult notFoundResult)
+        if (result.Result is not NotFoundResult notFoundResult)
         {
             Assert.Fail();
             return;
@@ -75,14 +75,14 @@ public class UserControllerTests
         var controller = new UserController(playerService.Object, jwtService.Object);
         var model = new LoginModel();
         var result = await controller.Create();
-        if (result is not OkObjectResult okResult)
+        if (result.Result is not OkObjectResult okResult)
         {
             Assert.Fail();
             return;
         }
         Assert.IsTrue(okResult.StatusCode == 200);
         Assert.IsNotNull(okResult.Value);
-        Assert.IsInstanceOfType(okResult.Value, typeof(string));
+        Assert.IsInstanceOfType(okResult.Value, typeof(CreateUserModel));
     }
     [TestMethod()]
     public async Task CreateTest_Failed()
@@ -96,7 +96,7 @@ public class UserControllerTests
 
         var controller = new UserController(playerService.Object, jwtService.Object);
         var result = await controller.Create();
-        if (result is not StatusCodeResult callResult)
+        if (result.Result is not StatusCodeResult callResult)
         {
             Assert.Fail();
             return;

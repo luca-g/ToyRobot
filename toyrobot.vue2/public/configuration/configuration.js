@@ -1,0 +1,1 @@
+window.toyRobotApi = 'https://localhost/toyrobotapi'

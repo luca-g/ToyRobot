@@ -18,7 +18,7 @@ namespace ToyRobot.API.Controllers
             this.jwtService = jwtService;
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Login(LoginModel loginModel)
+        public async Task<ActionResult<string>> Login(LoginModel loginModel)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace ToyRobot.API.Controllers
             }
         }
         [HttpPost("create")]
-        public async Task<IActionResult> Create()
+        public async Task<ActionResult<CreateUserModel>> Create()
         {
             try
             {
@@ -48,7 +48,12 @@ namespace ToyRobot.API.Controllers
                 {
                     { "userGuid", player.PlayerGuid }
                 });
-                return Ok(token);
+                var result = new CreateUserModel
+                {
+                    Token = token,
+                    UserGuid = player.PlayerGuid
+                };
+                return Ok(result);
             }
             catch (Exception)
             {
