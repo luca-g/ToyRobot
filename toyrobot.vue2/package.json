@@ -5,11 +5,11 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "watch": "vue-cli-service build --watch",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "api": "yarn del && SET JAVA_OPTS=-Dio.swagger.parser.util.RemoteUrl.trustAll=true -Dio.swagger.v3.parser.util.RemoteUrl.trustAll=true && openapi-generator-cli generate -i https://localhost/toyrobotapi/swagger/v1/swagger.json --generator-name typescript-axios -o gen/toyRobotApi --config toyRobotApi.json && cd gen/toyRobotApi && yarn install && yarn build && rd /s /q node_modules && cd ..\\.. && yarn add file:gen/toyRobotApi",
-    "del": "if exist \"gen\\toyRobotApi\" (rmdir \"gen\\toyRobotApi\" /q /s)"
+    "del": "if exist \"gen\\toyRobotApi\" (rmdir \"gen\\toyRobotApi\" /q /s)",
+    "watch": "vue-cli-service build --watch"
   },
   "dependencies": {
     "@openapitools/openapi-generator-cli": "^2.4.26",
@@ -20,6 +20,7 @@
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.5.1",
+    "vuetify": "^2.6.0",
     "vuex": "^3.6.2"
   },
   "devDependencies": {
@@ -45,6 +46,8 @@
     "swagger-codegen-openapi": "^1.0.7",
     "ts-jest": "^27.0.4",
     "typescript": "~4.5.5",
-    "vue-template-compiler": "^2.6.14"
+    "vue-cli-plugin-vuetify": "^2.4.8",
+    "vue-template-compiler": "^2.6.14",
+    "vuetify-loader": "^1.7.0"
   }
 }

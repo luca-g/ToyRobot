@@ -61,7 +61,7 @@ const mutations = {
   }
 }
 const actions = {
-  async loginUser({commit}: ActionContext<AppState,AppState>,userGuid:string) {
+  async loginUser({commit}: ActionContext<AppState,AppState>,userGuid:string) : Promise<string> {
     try{
       const loginModel:LoginModel = {
         userGuid
@@ -72,6 +72,7 @@ const actions = {
         token: response.data
       }
       commit('addUserLogin', loginPayload);
+      return userGuid;
     }
     catch(ex)
     {
