@@ -2,6 +2,9 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
 
+import VueCookie from 'vue-cookies'
+Vue.use(VueCookie, { expire: '7d'})
+
 import {AxiosRequestConfig} from 'axios'
 import {ActionContext} from 'vuex'
 import {AppState} from './appState'
@@ -11,9 +14,24 @@ import {LoginModel,ExecuteCommandModel,ICommandText} from 'toy-robot-axios';
 import {MapAndRobotIdPayload} from './model/mapAndRobotIdPayload'
 import {CommandAndResult} from './model/commandAndResult'
 
+/*
+import VuexPersistence from 'vuex-persist'
+const vuexLocal = new VuexPersistence<AppState>({
+  storage: window.localStorage
+})
+*/
+
+const cookies = Vue.$cookies;
+const usersKey = 'userLogins';
 const userApi = new UserApiWrapper();
 const commandApi = new CommandApiWrapper();
-
+const userLoginsFromCookie = () : string[] => {
+  const value = cookies.get(usersKey) as string ?? '';
+  if(value.length==0) {
+    return [];
+  }
+  return value.split(',');
+}
 const state:AppState = {
   userLogins: [],
   currentUser: null,
@@ -23,6 +41,37 @@ const state:AppState = {
   commandAndResults: [],
   commands:[]
 }
+
+
+const persistState = () => {
+  cookies.set('userLogins', state.userLogins);
+  cookies.set('currentUser', state.currentUser);
+  cookies.set('currentUserToken', state.currentUserToken);
+  cookies.set('currentMapId', state.currentMapId);
+  cookies.set('currentRobotId', state.currentRobotId);
+}
+const cookieValueOrNull = (name:string) : string|null => {
+  const value = cookies.get(name);
+  if(value===''||value===null||value==='null')
+    return null;
+  return value as string;
+}
+const cookieValueNumberOrNull = (name:string) : number|null => {
+  const value = cookieValueOrNull(name);
+  if(value===null)
+    return null;
+  return Number.parseInt(value);
+}
+const restoreState = () => {
+  state.userLogins = userLoginsFromCookie();
+  state.currentUser = cookieValueOrNull('currentUser');
+  state.currentUserToken = cookieValueOrNull('currentUserToken');
+  state.currentMapId = cookieValueNumberOrNull('currentMapId');
+  state.currentRobotId = cookieValueNumberOrNull('currentRobotId');
+}
+restoreState();
+
+
 const getAxiosOptions = () :AxiosRequestConfig|undefined => {
   if(state.currentUserToken==null){
     return undefined;
@@ -32,6 +81,7 @@ const getAxiosOptions = () :AxiosRequestConfig|undefined => {
   }
   return req;
 }
+
 const getters = {
   userLogins: (state:AppState) => state.userLogins,
   currentUser: (state:AppState) => state.currentUser,
@@ -42,10 +92,21 @@ const getters = {
 const mutations = {
   addUserLogin: (state:AppState, payload:LoginPayload) =>
   {
-    state.userLogins.push(payload.login);
+    if(state.userLogins.indexOf(payload.login)<0)
+    {
+      state.userLogins.push(payload.login);
+      cookies.set(usersKey,state.userLogins);
+    }
     state.currentUser = payload.login;
     state.currentUserToken = payload.token;
   },  
+  clearUserLogin: (state:AppState) =>
+  {
+    state.currentUser = null;
+    state.currentUserToken = null;
+    state.currentMapId = null;
+    state.currentRobotId = null;
+  },    
   setMapAndRobotId: (state:AppState, payload:MapAndRobotIdPayload) => 
   {
     state.currentRobotId = payload.robotId;
@@ -61,6 +122,19 @@ const mutations = {
   }
 }
 const actions = {
+  async logoff({commit}: ActionContext<AppState,AppState>) : Promise<void> {
+    return new Promise<void>(()=>{
+      try{
+        commit('clearUserLogin');
+        persistState();
+      }
+      catch(ex)
+      {
+        console.log('Logoff Error',ex);
+        throw ex;
+      }
+    });
+  },
   async loginUser({commit}: ActionContext<AppState,AppState>,userGuid:string) : Promise<string> {
     try{
       const loginModel:LoginModel = {
@@ -72,6 +146,7 @@ const actions = {
         token: response.data
       }
       commit('addUserLogin', loginPayload);
+      persistState();
       return userGuid;
     }
     catch(ex)
@@ -79,7 +154,7 @@ const actions = {
       console.log('Login Error',ex);
       throw ex;
     }
-  },
+  },  
   async createUser({commit}: ActionContext<AppState,AppState>) {
     try {
       const response = await userApi.apiV1UserCreatePost();
@@ -95,6 +170,7 @@ const actions = {
         token: response.data.token
       }
       commit('addUserLogin', loginPayload);
+      persistState();
     }
     catch(ex)
     {
@@ -130,7 +206,6 @@ const actions = {
   },
   async loadCommandList({commit}: ActionContext<AppState,AppState>) {
     try {      
-      console.log('loadCommandList')
       const response = await commandApi.apiV1CommandGet(getAxiosOptions());
       commit('setCommandList', response.data);
     }
@@ -147,5 +222,6 @@ export default new Vuex.Store({
   mutations,
   actions,
   modules: {
-  }
+  },
+  //plugins: [vuexLocal.plugin]
 })

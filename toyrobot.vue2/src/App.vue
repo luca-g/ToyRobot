@@ -48,7 +48,11 @@ import { defineComponent, onBeforeMount } from '@vue/composition-api'
 import store from '@/store'
 export default defineComponent({
     name: 'App',
-    setup(){
+    setup(props,context){
+      if(store.state.currentUser===null){
+        const router = context.root.$router;
+        router.push('login');
+      }
       console.log('App.setup');
     }
 })      
