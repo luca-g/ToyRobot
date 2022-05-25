@@ -70,6 +70,14 @@ public class MapSqlServerDBService : IMapService
         try
         {
             loggerService.LogTrace("CreateMap player {playerId}", playerId);
+            if (width <= 0)
+            {
+                throw new ArgumentException("Map width cannot be lower than 1");
+            }
+            if (heigth <= 0)
+            {
+                throw new ArgumentException("Map heigth cannot be lower than 1");
+            }
             var map = new Map
             {
                 Width = width,

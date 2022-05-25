@@ -89,16 +89,16 @@ namespace ToyRobot.API.Controllers.Tests
             var scenario = await factoryService.CreateScenario();
             Assert.IsNotNull(scenario);
 
-            Assert.IsTrue(await commandCenter.Execute(scenario, "PLACE 1,1,NORTH"));
-            IMapPosition? position = new MapPosition(1, 1, Common.Model.MapOrientationEnum.NORTH);
+            Assert.IsTrue(await commandCenter.Execute(scenario, "PLACE 2,1,NORTH"));
+            IMapPosition? position = new MapPosition(2, 1, Common.Model.MapOrientationEnum.NORTH);
             Assert.AreEqual(position.ToString(), scenario.RobotPosition?.ToString());
 
             Assert.IsTrue(await commandCenter.Execute(scenario, "LEFT"));
-            position = new MapPosition(1, 1, Common.Model.MapOrientationEnum.WEST);
+            position = new MapPosition(2, 1, Common.Model.MapOrientationEnum.WEST);
             Assert.AreEqual(position.ToString(), scenario.RobotPosition?.ToString());
 
             Assert.IsTrue(await commandCenter.Execute(scenario, "MOVE"));
-            position = new MapPosition(0, 1, Common.Model.MapOrientationEnum.WEST);
+            position = new MapPosition(1, 1, Common.Model.MapOrientationEnum.WEST);
             Assert.AreEqual(position.ToString(), scenario.RobotPosition?.ToString());
 
             Assert.IsTrue(await commandCenter.Execute(scenario, "MOVE"));

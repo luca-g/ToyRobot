@@ -31,16 +31,18 @@ public class IMapTests
     }
 
     [TestMethod()]
-    [DataRow(0, 0, true)]
-    [DataRow(0, 4, true)]
-    [DataRow(4, 0, true)]
+    [DataRow(0, 0, false)]
+    [DataRow(1, 1, true)]
+    [DataRow(1, 5, true)]
+    [DataRow(5, 1, true)]
     [DataRow(4, 4, true)]
-    [DataRow(5, 5, false)]
-    [DataRow(-1, 0, false)]
-    [DataRow(0, -1, false)]
+    [DataRow(5, 5, true)]
+    [DataRow(6, 6, false)]
+    [DataRow(-1, 1, false)]
+    [DataRow(1, -1, false)]
     [DataRow(-1, -1, false)]
-    [DataRow(4, 5, false)]
-    [DataRow(5, 4, false)]
+    [DataRow(5, 6, false)]
+    [DataRow(6, 5, false)]
     public void IsInMapTest(int x, int y, bool expected)
     {
         var map = (IMap) new LocalMap(5,5);

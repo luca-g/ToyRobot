@@ -14,7 +14,7 @@
                             v-model="selectedCommandParameters[item.name]"
                             class="align-center"
                             :max="20"
-                            :min="0"
+                            :min="1"
                             hide-details
                         >
                             <template v-slot:append>

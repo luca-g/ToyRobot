@@ -11,7 +11,7 @@ public interface IMap
     }
     bool IsInMap(IMapPoint point)
     {
-        return point.X < Width && point.Y < Height && point.X>=0 && point.Y>=0;
+        return point.X <= Width && point.Y <= Height && point.X>=1 && point.Y>=1;
     }
     static int Compare(IMap a, IMap b)
     {
