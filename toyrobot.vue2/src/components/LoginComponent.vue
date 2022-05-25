@@ -52,7 +52,7 @@ export default defineComponent({
                 .then(()=>loadHome())
                 .catch(()=>showError('Login error'));
             } else {
-                showError('Please select an user');
+                showError('Please select a user');
             }
         }
         return{

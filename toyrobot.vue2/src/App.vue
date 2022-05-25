@@ -27,14 +27,7 @@
 
       <v-spacer></v-spacer>
 
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
+      <UserButtonComponent />
     </v-app-bar>
 
     <v-main>
@@ -44,16 +37,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
+import UserButtonComponent from '@/components/UserButtonComponent.vue'
 import store from '@/store'
 export default defineComponent({
     name: 'App',
+    components: {
+      UserButtonComponent,
+    },    
     setup(props,context){
       if(store.state.currentUser===null){
         const router = context.root.$router;
         router.push('login');
       }
-      console.log('App.setup');
     }
 })      
 </script>

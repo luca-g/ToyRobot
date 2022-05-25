@@ -1,16 +1,15 @@
 <template>
     <div>
-        <CommandComponent @command-text="commandText"/>
+        <CommandComponent />
     </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, reactive } from '@vue/composition-api'
-import { onBeforeMount } from '@vue/composition-api'
 import CommandComponent from '@/components/CommandComponent.vue'
 import store from '@/store'
 export default defineComponent({
-    name: 'HomeView',
+    name: 'MainComponent',
     components: {
       CommandComponent,
     },     
@@ -22,17 +21,9 @@ export default defineComponent({
         });
         const showError = (error:string) => {
             console.log(error);
-        }
-        onBeforeMount(()=>{
-            store.dispatch('loadCommandList')
-            .catch(()=>showError('Error loading commands'));
-        });
-        const commandText = (text:string) => {
-            console.log("home command text", text);
-        }
+        }        
         return{
             state,
-            commandText
         }
     }
 })      

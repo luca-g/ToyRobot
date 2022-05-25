@@ -71,7 +71,6 @@ const restoreState = () => {
 }
 restoreState();
 
-
 const getAxiosOptions = () :AxiosRequestConfig|undefined => {
   if(state.currentUserToken==null){
     return undefined;
@@ -122,8 +121,7 @@ const mutations = {
   }
 }
 const actions = {
-  async logoff({commit}: ActionContext<AppState,AppState>) : Promise<void> {
-    return new Promise<void>(()=>{
+  async logoff({commit}: ActionContext<AppState,AppState>)  {
       try{
         commit('clearUserLogin');
         persistState();
@@ -133,7 +131,7 @@ const actions = {
         console.log('Logoff Error',ex);
         throw ex;
       }
-    });
+    
   },
   async loginUser({commit}: ActionContext<AppState,AppState>,userGuid:string) : Promise<string> {
     try{
@@ -206,8 +204,11 @@ const actions = {
   },
   async loadCommandList({commit}: ActionContext<AppState,AppState>) {
     try {      
-      const response = await commandApi.apiV1CommandGet(getAxiosOptions());
-      commit('setCommandList', response.data);
+      if(state.commands.length==0)
+      {
+        const response = await commandApi.apiV1CommandGet(getAxiosOptions());
+        commit('setCommandList', response.data);
+      }
     }
     catch(ex)
     {
