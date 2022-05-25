@@ -115,6 +115,10 @@ const mutations = {
   {
     state.commandAndResults.unshift(payload);
   },
+  clearCommandAndResult: (state:AppState) =>
+  {
+    state.commandAndResults = [];
+  },  
   setCommandList: (state:AppState, payload:ICommandText[]) =>
   {
     state.commands = payload;
@@ -144,6 +148,12 @@ const actions = {
         token: response.data
       }
       commit('addUserLogin', loginPayload);
+      const mapAndRobotIdPayload : MapAndRobotIdPayload = {
+        mapId:null,
+        robotId:null
+      }
+      commit('setMapAndRobotId', mapAndRobotIdPayload);
+      commit('clearCommandAndResult');
       persistState();
       return userGuid;
     }
@@ -168,6 +178,12 @@ const actions = {
         token: response.data.token
       }
       commit('addUserLogin', loginPayload);
+      const mapAndRobotIdPayload : MapAndRobotIdPayload = {
+        mapId:null,
+        robotId:null
+      }
+      commit('setMapAndRobotId', mapAndRobotIdPayload);
+      commit('clearCommandAndResult');      
       persistState();
     }
     catch(ex)
@@ -195,6 +211,7 @@ const actions = {
         dateTime: new Date()
       }
       commit('addCommandAndResult', commandAndResult);
+      console.log('executeCommand completed');
     }
     catch(ex)
     {

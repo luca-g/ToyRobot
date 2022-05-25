@@ -1,6 +1,7 @@
 <template>
     <div>
         <CommandComponent @command-text="commandText"/>
+        <CommandsResultComponent />
     </div>
 </template>
 
@@ -8,18 +9,15 @@
 import { defineComponent, computed, reactive } from '@vue/composition-api'
 import { onBeforeMount } from '@vue/composition-api'
 import CommandComponent from '@/components/CommandComponent.vue'
+import CommandsResultComponent from '@/components/CommandsResultComponent.vue'
 import store from '@/store'
 export default defineComponent({
     name: 'HomeView',
     components: {
       CommandComponent,
+      CommandsResultComponent,
     },     
-    setup(props,context){
-        const router = context.root.$router;
-        const state = reactive({
-            commands:computed(() => store.state.commands),
-            selectedCommand: store.state.commands[0],
-        });
+    setup(){
         const showError = (error:string) => {
             console.log(error);
         }
@@ -27,11 +25,12 @@ export default defineComponent({
             store.dispatch('loadCommandList')
             .catch(()=>showError('Error loading commands'));
         });
-        const commandText = (text:string) => {
+        const commandText = async (text:string) => {
             console.log("home command text", text);
+            await store.dispatch('executeCommand', text);
+            console.log('commandText completed');
         }
         return{
-            state,
             commandText
         }
     }

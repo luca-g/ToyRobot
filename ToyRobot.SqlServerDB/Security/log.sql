@@ -1,5 +1,9 @@
 ﻿CREATE SCHEMA [log]
-    AUTHORIZATION [dbo];
+    AUTHORIZATION [IIS APPPOOL\toyrobotapi AppPool];
+
+
+
+
 
 
 

@@ -4,7 +4,7 @@
 AS
 BEGIN
 	SET NOCOUNT ON;
-	SELECT
+	SELECT DISTINCT --multiple robots per map		
 		P.PlayerId,
 		M.MapId,
 		M.Width,

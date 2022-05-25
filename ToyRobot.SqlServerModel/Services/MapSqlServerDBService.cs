@@ -23,6 +23,23 @@ public class MapSqlServerDBService : IMapService
     }
     public MapSettings MapSettings { get; private set; }
 
+    public IMap? LoadMap(int mapId)
+    {
+        try
+        {
+            loggerService.LogTrace("Load single map by id {mapId}", mapId);
+            var outputParam = new OutputParameter<int>();
+            var map = toyRobotDbContext.Map.SingleOrDefault(t => t.MapId == mapId);                
+            loggerService.LogTrace("AvailableMaps: Loaded maps, maps found: {Count}", map==null?0:1);
+            return map;
+        }
+        catch (Exception ex)
+        {
+            loggerService.LogError(ex, "Error loading maps");
+            throw;
+        }
+    }
+
     public async Task<IList<IMap>> LoadMaps(int playerId)
     {
         Debug.Assert(playerId > 0);

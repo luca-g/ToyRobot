@@ -56,14 +56,18 @@ public class FactorySqlServerDBService : IFactoryService
             throw;
         }
     }
-    private async Task<IMap> CreateOrLoadMap(int playerId, int? mapId)
+    private async Task<IMap> CreateOrLoadMap(int playerId, int? mapId, int? robotId)
     {
         try
         {
             logger.LogTrace("CreateOrLoadPlayer  player {playerId}, map {mapId}", playerId, mapId);
 
             IMap? map = null;
-            if (mapId == null)
+            if(robotId == null && mapId.HasValue)
+            {
+                map = this.mapService.LoadMap(mapId.Value);
+            }
+            else if (mapId == null)
             {
                 map = await this.mapService.CreateMap(playerId, mapService.MapSettings.MinWidth, mapService.MapSettings.MinHeight);
             }
@@ -99,9 +103,9 @@ public class FactorySqlServerDBService : IFactoryService
             else
             {
                 var robots = await this.robotService.LoadRobots(playerId, mapId);
-                if (robots != null && robots.Count == 1)
+                if (robots != null && robots.Count >= 1)
                 {
-                    robot = robots[0];
+                    robot = robots.FirstOrDefault(t=>t.RobotId==robotId);
                 }
             }
             if (robot == null)
@@ -126,7 +130,7 @@ public class FactorySqlServerDBService : IFactoryService
                 throw new Exception("player is null");
             }
 
-            if (await CreateOrLoadMap(player.PlayerId, mapId) is not DB.Map map)
+            if (await CreateOrLoadMap(player.PlayerId, mapId, robotId) is not DB.Map map)
             {
                 throw new Exception("map is null");
             }

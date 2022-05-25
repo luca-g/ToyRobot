@@ -87,7 +87,7 @@ public class RobotSqlServerDBService : IRobotService, IRobotServiceDB
             loggerService.LogTrace("Setting map posiiton player {PlayerId}, robot {RobotId}", playerId, robot.RobotId);
 
             Robot? ctxRobot;
-            if(robot is Robot robotObject)
+            if(robot is Robot robotObject && toyRobotDbContext.Entry(robot).State != EntityState.Detached)
             {
                 ctxRobot = robotObject;
             }
