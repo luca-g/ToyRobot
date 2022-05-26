@@ -1,8 +1,8 @@
 <template>
     <v-btn v-if="state.isLoggedIn"
       tile
-      color="success"
-      @click="logout()"
+      secondary
+      @click="logout()"      
     >
       <v-icon left>
         mdi-account

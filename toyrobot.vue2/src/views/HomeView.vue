@@ -1,6 +1,6 @@
 <template>
     <div>
-        <CommandComponent @command-text="commandText"/>
+        <CommandComponent @command-text="commandText" class="mb-4"/>
         <CommandsResultComponent />
     </div>
 </template>

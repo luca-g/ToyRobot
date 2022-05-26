@@ -7,7 +7,7 @@
     >
       <div class="d-flex align-center">
         <v-img
-          alt="Vuetify Logo"
+          alt="ToyRobot Logo"
           class="shrink mr-2"
           contain
           src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
@@ -15,14 +15,7 @@
           width="40"
         />
 
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
+        <div class="text-h4" inline>ToyRobot</div>
       </div>
 
       <v-spacer></v-spacer>
@@ -31,11 +24,17 @@
     </v-app-bar>
 
     <v-main>
-      <router-view/>
+      <v-container>
+        <router-view/>
+      </v-container>
     </v-main>
   </v-app>
 </template>
-
+<style>
+.v-application{
+  min-width: 600px;
+}
+</style>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import UserButtonComponent from '@/components/UserButtonComponent.vue'

@@ -1,15 +1,19 @@
 <template>
-    <div v-if="!state.isLoggedIn"  id="login">
-        <h1>Login</h1>
-        <v-select v-model="state.selectedUser" :items="state.users" label="select or create a user" single-line></v-select>
-        <v-btn @click="login()" :disabled="state.selectedUser==''" >Login</v-btn>
-        <v-btn @click="createUser()">Create User</v-btn>
-    </div>
-    <div v-else id="logoff">
-        <h1>Login</h1>
-        <v-text-field :value="state.selectedUser" readonly />
-        <v-btn @click="logout()">Logout</v-btn>
-    </div>
+    <v-card>
+        <v-container>
+            <div v-if="!state.isLoggedIn"  id="login">
+                <div class="text-h5">Login</div>
+                <v-select v-model="state.selectedUser" :items="state.users" label="select or create a user" single-line></v-select>
+                <v-btn @click="login()" :disabled="state.selectedUser==''" class="mr-2">Login</v-btn>
+                <v-btn @click="createUser()">Create User</v-btn>
+            </div>
+            <div v-else id="logoff">
+                <h1>Login</h1>
+                <v-text-field :value="state.selectedUser" readonly />
+                <v-btn @click="logout()">Logout</v-btn>
+            </div>
+        </v-container>
+    </v-card>
 </template>
 
 <script lang="ts">
