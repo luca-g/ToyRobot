@@ -63,7 +63,6 @@ export default defineComponent({
     name: 'UserButtonComponent',
     emits: ['command-text'],
     setup(props,context){        
-        const router = context.root.$router;
         const selectedCommand = ref<ICommandText|null>(null);
         const selectedCommandParameters = ref({});
         const state = reactive({

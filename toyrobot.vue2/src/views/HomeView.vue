@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, computed, reactive } from '@vue/composition-api'
+import { defineComponent } from '@vue/composition-api'
 import { onBeforeMount } from '@vue/composition-api'
 import CommandComponent from '@/components/CommandComponent.vue'
 import CommandsResultComponent from '@/components/CommandsResultComponent.vue'
