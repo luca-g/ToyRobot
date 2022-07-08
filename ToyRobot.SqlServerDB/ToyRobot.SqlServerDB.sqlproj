@@ -79,4 +79,7 @@
     <Build Include="log\Tables\Command.sql" />
     <Build Include="Security\IIS APPPOOL_toyrobotapi AppPool.sql" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="README.md" />
+  </ItemGroup>
 </Project>
