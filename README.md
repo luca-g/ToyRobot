@@ -5,6 +5,7 @@ You control a robot movements on a map using a Vue2 front end or a console appli
 The application is composed by 
 - REST API using JWT authentication exposing objects and endpoints with Swagger
 - SQL Server database project with models generated with EF Core Power Tools
+- Console application
 - Vue2 project with networking code generated using OpenAPI tools
 - Unit test projects
 
