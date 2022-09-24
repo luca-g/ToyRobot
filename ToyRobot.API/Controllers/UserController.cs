@@ -52,7 +52,7 @@ namespace ToyRobot.API.Controllers
                 {
                     Token = token,
                     UserGuid = player.PlayerGuid
-                };
+                };                
                 return Ok(result);
             }
             catch (Exception)

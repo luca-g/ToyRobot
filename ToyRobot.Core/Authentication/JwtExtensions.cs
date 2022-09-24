@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace Microsoft.Extensions.DependencyInjection;
@@ -17,12 +19,12 @@ public static class JwtExtensions
         {
             throw new Exception($"Missing section {JwtSettings.SectionName}");
         }
-        if (settings.Secret == null)
-        {
-            throw new Exception($"Missing Secret section {JwtSettings.SectionName}");
-        }
 
-        var key = Encoding.ASCII.GetBytes(settings.Secret);
+        var x509 = new X509Certificate2(File.ReadAllBytes(settings.CertificatePath), settings.CertificatePassword);
+        var rsaPublic = x509.GetRSAPublicKey();
+        if (rsaPublic == null)
+            throw new Exception("Invalid rsa key");
+
         services.AddAuthentication(x =>
         {
             x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -31,8 +33,8 @@ public static class JwtExtensions
         .AddJwtBearer(x =>
         {
             x.TokenValidationParameters = new TokenValidationParameters
-            {
-                IssuerSigningKey = new SymmetricSecurityKey(key),
+            {                
+                IssuerSigningKey = new RsaSecurityKey(rsaPublic),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidIssuer = settings.Issuer,

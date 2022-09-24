@@ -4,17 +4,35 @@ using JWT.Exceptions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Authentication;
 public class JwtService : IJwtService
 {
     private readonly JwtSettings jwtSettings;
     private readonly ILogger<JwtService> logger;
+    private readonly RSA rsaPublic;
+    private readonly RSA rsaPrivate;
+
     public JwtService(IOptions<JwtSettings> jwtSettings, ILogger<JwtService> logger)
     {
         this.jwtSettings = jwtSettings.Value;
         this.logger = logger;
+
+        var x509 = new X509Certificate2(File.ReadAllBytes(this.jwtSettings.CertificatePath), this.jwtSettings.CertificatePassword);
+        var rsaPublic = x509.GetRSAPublicKey();
+        if (rsaPublic == null)
+            throw new Exception("Invalid rsa key");
+
+        var rsaPrivate = x509.GetRSAPrivateKey();
+        if (rsaPrivate == null)
+            throw new Exception("Invalid rsa key");
+
+        this.rsaPublic = rsaPublic;
+        this.rsaPrivate =  rsaPrivate;
     }
 
     public IDictionary<string, object> Decode(string token)
@@ -23,9 +41,9 @@ public class JwtService : IJwtService
         try
         {
             this.logger.LogTrace("Decoding token {token}", token);
+
             values = JwtBuilder.Create()
-                .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(this.jwtSettings.Secret)
+                .WithAlgorithm(new RS256Algorithm(this.rsaPublic))
                 .MustVerifySignature()
                 .Decode<IDictionary<string, object>>(token);
         }
@@ -83,8 +101,7 @@ public class JwtService : IJwtService
             }
 
             var builder = JwtBuilder.Create()
-                .WithAlgorithm(new HMACSHA256Algorithm())
-                .WithSecret(this.jwtSettings.Secret)
+                .WithAlgorithm(new RS256Algorithm(this.rsaPublic, this.rsaPrivate))
                 .Issuer(this.jwtSettings.Issuer)
                 .Audience(this.jwtSettings.Audience);
             if (this.jwtSettings.ExpirationMinutes.HasValue)

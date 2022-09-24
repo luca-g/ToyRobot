@@ -10,7 +10,6 @@ namespace Authentication.Tests
     [TestClass()]
     public class JwtServiceTests
     {
-        const string Secret = "secret";
         private static (string, Guid) CreateToken(bool addClaims = true)
         {
             var userGuid = Guid.NewGuid();
@@ -19,7 +18,8 @@ namespace Authentication.Tests
                 Audience = "localhost",
                 ExpirationMinutes = null,
                 Issuer = "localhost",
-                Secret = Secret
+                CertificatePath = "d:\\Certificates\\localhost.pfx",
+                CertificatePassword = "secretPassword"
             };
             Mock<IOptions<JwtSettings>> options = new();
             options.Setup(x => x.Value).Returns(settings);
@@ -52,7 +52,8 @@ namespace Authentication.Tests
                 Audience = "localhost",
                 ExpirationMinutes = null,
                 Issuer = "localhost",
-                Secret = Secret
+                CertificatePath = "d:\\Certificates\\localhost.pfx",
+                CertificatePassword = "secretPassword"
             };
             Mock<IOptions<JwtSettings>> options = new();
             options.Setup(x => x.Value).Returns(settings);
