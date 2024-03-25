@@ -5,7 +5,6 @@ Vue.use(Vuex)
 import VueCookie from 'vue-cookies'
 Vue.use(VueCookie, { expire: '7d'})
 
-import {AxiosRequestConfig} from 'axios'
 import {ActionContext} from 'vuex'
 import {AppState} from './appState'
 import {LoginPayload} from './model/loginPayload'
@@ -30,7 +29,7 @@ const userLoginsFromCookie = () : string[] => {
   if(value.length==0) {
     return [];
   }
-  return value.split(',');
+  return [value];//[0];//.split(',');
 }
 const state:AppState = {
   userLogins: [],
@@ -71,14 +70,15 @@ const restoreState = () => {
 }
 restoreState();
 
-const getAxiosOptions = () :AxiosRequestConfig|undefined => {
+const getAxiosOptions = () => {
   if(state.currentUserToken==null){
-    return undefined;
+    return {
+      headers: {}
+    }
   }
-  const req:AxiosRequestConfig = {
+  return {
     headers: {"Authorization" : `Bearer ${state.currentUserToken}`}
   }
-  return req;
 }
 
 const getters = {
@@ -198,8 +198,9 @@ const actions = {
         mapId: state.currentMapId,
         robotId: state.currentRobotId,
         text: commandText
-      }
-      const response = await commandApi.apiV1CommandPost(executeCommandModel, getAxiosOptions());
+      }     
+      const options = getAxiosOptions();    
+      const response = await commandApi.apiV1CommandPost(executeCommandModel, options);
       const mapAndRobotIdPayload:MapAndRobotIdPayload = {
         mapId: response.data.mapId ?? null,
         robotId: response.data.robotId ?? null,

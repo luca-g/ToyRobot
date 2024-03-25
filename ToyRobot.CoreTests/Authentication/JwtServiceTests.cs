@@ -18,7 +18,7 @@ namespace Authentication.Tests
                 Audience = "localhost",
                 ExpirationMinutes = null,
                 Issuer = "localhost",
-                CertificatePath = "d:\\Certificates\\localhost.pfx",
+                CertificatePath = "c:\\Certificates\\localhost.pfx",
                 CertificatePassword = "secretPassword"
             };
             Mock<IOptions<JwtSettings>> options = new();
@@ -52,7 +52,7 @@ namespace Authentication.Tests
                 Audience = "localhost",
                 ExpirationMinutes = null,
                 Issuer = "localhost",
-                CertificatePath = "d:\\Certificates\\localhost.pfx",
+                CertificatePath = "c:\\Certificates\\localhost.pfx",
                 CertificatePassword = "secretPassword"
             };
             Mock<IOptions<JwtSettings>> options = new();

@@ -1,20 +1,20 @@
 <template>
     <v-card>
-        <v-container :key="state.selectedCommandName">
+        <v-container :key="selectedCommand?.commandName">
             <div class="text-h5">Command</div>
             <v-select v-model="selectedCommand" :items="state.commands" item-text="commandName" @change="selectedItem" label="select a command" single-line></v-select>
-            <div v-if="selectedCommand!==null && selectedCommand.commandParameters.length>0">
+            <div v-if="selectedCommandHasParameters()" :key="selectedCommandName">
                 <span>Parameters</span>
                 <v-container class="pl-8">
-                    <v-row v-for="item in selectedCommand.commandParameters" :key="item.name">
-                        <v-col cols="3">{{capitalizeFirstLetter(item.name)}}</v-col>
-                        <v-col v-if="item.parameterTypeName!==undefined">
+                    <v-row v-for="item in selectedCommandParameters()" :key="item.name">
+                        <v-col cols="3" v-if="item.name">{{capitalizeFirstLetter(item.name)}}</v-col>
+                        <v-col v-if="item.parameterTypeName!==undefined && item.name">
                             <span v-if="item.acceptedValues!==null">
-                                <v-select v-model="selectedCommandParameters[item.name]" :items="item.acceptedValues" label="select" single-line></v-select>
+                                <v-select v-model="state.parameterValue[item.name]" :items="item.acceptedValues" label="select" single-line></v-select>
                             </span>
                             <span v-else-if="item.parameterTypeName==='Int32'">
                                 <v-slider
-                                    v-model="selectedCommandParameters[item.name]"
+                                    v-model="state.parameterValue[item.name]"
                                     class="align-center"
                                     :max="20"
                                     :min="1"
@@ -22,7 +22,7 @@
                                 >
                                     <template v-slot:append>
                                     <v-text-field
-                                        v-model="selectedCommandParameters[item.name]"
+                                        v-model="state.parameterValue[item.name]"
                                         class="mt-0 pt-0"
                                         hide-details
                                         single-line
@@ -34,7 +34,7 @@
                             </span>                    
                             <span v-else>
                                 <v-text-field
-                                    v-model="selectedCommandParameters[item.name]"
+                                    v-model="state.parameterValue[item.name]"
                                     class="mt-0 pt-0"
                                     hide-details
                                     single-line
@@ -57,18 +57,38 @@
 
 <script lang="ts">
 import { defineComponent, computed, reactive, ref } from '@vue/composition-api'
-import { ICommandText } from 'toy-robot-axios'
+import { ICommandText, ICommandParameter } from 'toy-robot-axios'
 import store from '@/store'
 export default defineComponent({
     name: 'UserButtonComponent',
     emits: ['command-text'],
     setup(props,context){        
+        type ParameterValues = {
+            // eslint-disable-next-line
+            [key: string]: any; // Use `any` or a more specific type as needed
+        };        
         const selectedCommand = ref<ICommandText|null>(null);
-        const selectedCommandParameters = ref({});
+        const selectedCommandParameters = () => {
+            if(!selectedCommand.value)
+            {
+                console.log('selectedCommandParameters: no selected command')
+                return [];
+            }
+            console.log('selectedCommandParameters parameters ',selectedCommand.value.commandParameters)
+            return selectedCommand.value.commandParameters as Array<ICommandParameter>;
+        };
+        const selectedCommandName = computed(()=>{
+            return selectedCommand.value ? selectedCommand.value.commandName??'' : '';
+        });
+        const selectedCommandHasParameters = ()=>{
+            return selectedCommand.value && selectedCommand.value.commandParameters ? selectedCommand.value.commandParameters.length>0 : false;
+        };
         const state = reactive({
-            commands:computed(() => store.state.commands),
-            selectedCommandName: '',
-            parameterValue: {}
+            commands: computed(() => {
+                console.log('all commands',store.state.commands);
+                return store.state.commands;
+            }),                        
+            parameterValue: {} as ParameterValues
         });
         const showError = (error:string) => {
             console.log(error);
@@ -80,11 +100,18 @@ export default defineComponent({
                 showError('command not found ' + key);
                 return;
             }
-            state.selectedCommandName = item.commandName??'';
             console.log('selectedItem', item);
             selectedCommand.value = item;
-            console.log('selectedCommand', selectedCommand);
-            selectedCommandParameters.value = {};
+            for (let key in state.parameterValue) {
+                delete state.parameterValue[key];
+            }
+            item.commandParameters?.forEach(param => {
+                if(param.name)
+                {
+                    state.parameterValue[param.name] = 0;
+                }
+            });
+            console.log('all command parameters and values',state.parameterValue);
         }
         const send = () => {
             const command:ICommandText|null = selectedCommand.value;
@@ -95,16 +122,18 @@ export default defineComponent({
                 if(command.commandParameters!=null)
                 {
                     command.commandParameters.forEach(item => {
-                        const key = item.name??'';
-                        const dict = (selectedCommandParameters.value) as any;
-                        const dvalue = dict[key];
-                        commandText += "," + dvalue;
+                        if(item.name)
+                        {
+                            const dvalue = state.parameterValue[item.name];
+                            commandText += "," + dvalue;
+                        }
                     });
                 }
                 context.emit('command-text', commandText);
             }
         }
         const capitalizeFirstLetter = (text:string) => {
+            console.log('capitalize first ' + text);
             return text.charAt(0).toUpperCase() + text.slice(1);
         }
         return{
@@ -112,6 +141,8 @@ export default defineComponent({
             selectedItem,
             selectedCommand,
             selectedCommandParameters,
+            selectedCommandHasParameters,
+            selectedCommandName,
             send,
             capitalizeFirstLetter
         }

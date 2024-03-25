@@ -24,6 +24,7 @@ Generated code is in gen/toyRobotApi
 ## Project setup
 
 ```
+npm install --global yarn
 yarn install
 ```
 

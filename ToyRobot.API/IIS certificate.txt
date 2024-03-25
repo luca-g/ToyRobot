@@ -1,7 +1,7 @@
 ﻿To create and install the localhost certificate, 
 customize $certKeyPath and execute in powershell:
 
-$certKeyPath = "d:\Certificates\localhost.pfx"
+$certKeyPath = "c:\Certificates\localhost.pfx"
 $cert = New-SelfSignedCertificate -DnsName @("localhost") -CertStoreLocation "cert:\LocalMachine\My"
 $password = ConvertTo-SecureString 'secretPassword' -AsPlainText -Force
 $cert | Export-PfxCertificate -FilePath $certKeyPath -Password $password
